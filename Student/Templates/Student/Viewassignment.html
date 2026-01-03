@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Assignment</title>
+</head>
+<body>
+    <table border="1">
+        <tr>
+            <td>SlNo</td>
+            <td>Title</td>
+            <td>Assignment</td>
+            <td>Due Date</td>
+            <td>Course</td>
+            <td>Semester</td>
+            <td>Subject</td>
+            <td>Action</td>
+        </tr>
+            {% for i in assignmentdata  %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ i.assignment_title }}</td>
+            <td><a href="{{ i.assignment_file.url }}">View File</a></td>
+            <td>{{ i.assignment_duedate }}</td>
+            <td>{{ i.subject.course.course_name }}</td>
+            <td>{{ i.subject.semester.semester_name }}</td>
+            <td>{{ i.subject.subject_name }}</td>
+            <td><a href="{% url 'Student:Submitassignment' i.id %}">Upload</a></td>
+        </tr>
+            {% endfor %}
+    </table>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Assignments</title>
+</head>
+<body>
+    <table border="1">
+        <tr>
+            <td>SlNo</td>
+            <td>Assignment Title</td>
+            <td>File</td>
+            <td>Semester</td>
+            <td>Subject</td>
+            <td>Answer File</td>
+            <td>Marks</td>
+        </tr>
+        {% for i in submitdata %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ i.assignment.assignment_title }}</td>
+            <td><a href="{{ i.assignment.assignment_file.url }}">View File</a></td>
+            <td>{{ i.assignment.subject.semester.semester_name }}</td>
+            <td>{{ i.assignment.subject.subject_name }}</td>
+            <td><a href="{{ i.ass_file.url }}">View File</a></td>
+            <td>{{ i.ass_score }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

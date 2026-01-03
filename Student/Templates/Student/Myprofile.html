@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyProfile</title>
+</head>
+<body>
+    <table border="1">
+        <tr>
+            
+            <td colspan="2" align="center"><img src="{{student.student_photo.url}}" alt=""></td>
+        </tr>
+        <tr>
+            <td>Name</td>
+            <td>{{student.student_name}}</td>
+        </tr>
+        <tr>
+            <td>Email</td>
+            <td>{{student.student_email}}</td>
+        </tr>
+        <tr>
+            <td>Contact</td>
+            <td>{{student.student_contact}}</td>
+        </tr>
+        <tr>
+            <td>Address</td>
+            <td>{{student.student_address}}</td>
+        </tr>
+        
+        <tr>
+            
+            <td colspan="2" align="center">
+                <a href="{% url 'Student:Editprofile' %}">Edit Profile</a>|
+                <a href="{% url 'Student:Changepass' %}">Change Password</a>
+            </td>
+        </tr>
+    </table>
+    
+</body>
+</html>

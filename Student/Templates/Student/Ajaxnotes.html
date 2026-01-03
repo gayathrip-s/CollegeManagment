@@ -1,0 +1,18 @@
+<table border="1">
+    <tr>
+        <td>SlNo</td>
+        <td>Semester</td>
+        <td>Subject</td>
+        <td>Content</td>
+        <td>Notes</td>
+    </tr>
+    {% for i in notedata %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ i.subject.semester.semester_name }}</td>
+        <td>{{ i.subject.subject_name }}</td>
+        <td>{{ i.notes_content }}</td>
+        <td><a href="{{ i.notes_file.url }}">View File</a></td>
+    </tr>
+    {% endfor %}
+</table>

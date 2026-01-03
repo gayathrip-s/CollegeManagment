@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AddTeacher</title>
+</head>
+<body>
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <table border="1">
+            <tr>
+                <td>Name</td>
+                <td><input type="text" name="txt_name" id="txt_name"></td>
+            </tr>
+            <tr>
+                <td>Email</td>
+                <td><input type="text" name="txt_email" id="txt_email"></td>
+            </tr>
+            <tr>
+                <td>Contact</td>
+                <td><input type="text" name="txt_contact" id="txt_contact"></td>
+            </tr>
+            <tr>
+                <td>Role</td>
+                <td><input type="radio" name="txt_role" id="txt_role" value="Staff">Staff
+                <input type="radio" name="txt_role" id="txt_role" value="HOD">HOD</td>
+            </tr>
+            <tr>
+                <td>Gender</td>
+                <td><input type="radio" name="txt_gender" id="txt_gender" value="Male">Male
+                <input type="radio" name="txt_gender" id="txt_gender" value="Female">Female</td>
+            </tr>
+            <tr>
+                <td>Photo</td>
+                <td><input type="file" name="file_photo" id="file_photo"></td>
+            </tr>
+            <tr>
+                <td>Department</td>
+                <td><select name="sel_department" id="sel_department">
+                    <option value="">---select---</option>
+                    {% for i in departmentdata %}
+                    <option value="{{i.id}}">{{i.department_name}}</option>
+                    {% endfor %}
+                </select></td>
+            </tr>
+            <tr>
+                <td>Password</td>
+                <td><input type="password" name="txt_password" id="txt_password"></td>
+            </tr>
+            <tr>
+                
+                <td colspan="2" align="center"><input type="submit" value="Submit">
+                    <input type="submit" value="Clear"></td>
+            </tr>
+        </table>
+    </form>
+    <br>
+    <table border="1">
+        <tr>
+            <td>SlNo</td>
+            <td>Name</td>
+            <td>Email</td>
+            <td>Contact</td>
+            <td>Role</td>
+            <td>Gender</td>
+            <td>Department</td>
+            <td>Action</td>
+        </tr>
+        {% for i in teacherdata %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ i.teacher_name }}</td>
+            <td>{{ i.teacher_email }}</td>
+            <td>{{ i.teacher_contact }}</td>
+            <td>{{ i.teacher_role }}</td>
+            <td>{{ i.teacher_gender }}</td>
+            <td>{{i.department.department_name}}</td>
+            <td><a href="{% url 'Admin:Assignclass' i.id %}">Assign Class</a>
+                <a href="{% url 'Admin:Assignsubject' i.id %}">Assign Subject</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
+{% if msg %}
+<script>
+    alert("{{msg}}")
+    window.location = "{% url 'Admin:Addteacher' %}"
+</script>
+{% endif %}

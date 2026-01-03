@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viewnotes</title>
+</head>
+
+<body>
+    <table border="1">
+        <tr>
+            <td>Semester <select name="sel_semester" id="sel_semester">
+                    <option value="">--Select--</option>
+                    {% for i in semesterdata %}
+                    <option value="{{i.id}}">{{i.semester_name}}</option>
+                    {% endfor %}
+                </select></td>
+            <td>Subject :
+
+                <select name="sel_subject" id="sel_subject">
+                    <option value="">--Select--</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+    <br>
+
+    <div id="result"></div>
+
+
+
+</body>
+
+</html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    $("#sel_semester").change(function () {
+        var semid = $(this).val();
+        var ur = "{% url 'Student:AjaxSubject' %}";
+        $.ajax({
+            url: ur,
+            data: { semid: semid },
+            success: function (data) {
+                $("#sel_subject").html(data);
+            },
+        });
+    });
+
+    $("#sel_subject").change(function () {
+        var subid = $(this).val();
+        var ur = "{% url 'Student:Ajaxnotes' %}";
+        $.ajax({
+            url: ur,
+            data: { subid: subid },
+            success: function (data) {
+                $("#result").html(data);
+            },
+        });
+    });
+</script>

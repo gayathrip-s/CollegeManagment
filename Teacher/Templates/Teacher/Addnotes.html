@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Addnotes</title>
+</head>
+
+<body>
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <table border="1">
+            <tr>
+                <td>Course</td>
+                <td><select name="sel_course" id="sel_course">
+                        <option value="">---select---</option>
+                        {% for i in coursedata %}
+                        <option value="{{i.id}}">{{i.course_name}}</option>
+                        {% endfor %}
+                    </select></td>
+            </tr>
+            <tr>
+                <td>Semester</td>
+                <td><select name="sel_semester" id="sel_semester">
+                        <option value="">---select---</option>
+                        {% for i in semesterdata %}
+                        <option value="{{i.id}}">{{i.semester_name}}</option>
+                        {% endfor %}
+                    </select></td>
+            </tr>
+            <tr>
+                <td>Subject</td>
+                <td><select name="sel_subject" id="sel_subject">
+                        <option value="">---select---</option>
+                </td>
+            </tr>
+            <tr>
+                <td>File</td>
+                <td><input type="file" name="file_note" id="file_note"></td>
+            </tr>
+            <tr>
+                <td>Content</td>
+                <td><input type="text" name="txt_content" id="txt_content"></td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center"><input type="submit" value="submit"></td>
+
+            </tr>
+        </table>
+    </form>
+    <br>
+    <table border="1">
+        <tr>
+            <td>SlNo</td>
+            <td>Course</td>
+            <td>Semester</td>
+            <td>Subject</td>
+            <td>File</td>
+            <td>Content</td>
+            <td>Action</td>
+        </tr>
+        {% for i in addnotesdata %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ i.subject.course.course_name }}</td>
+            <td>{{ i.subject.semester.semester_name }}</td>
+            <td>{{ i.subject.subject_name }}</td>
+            <td><a href="{{ i.notes_file.url }}">View File</a></td>
+            <td>{{ i.notes_content }}</td>
+            <td><a href="{% url 'Teacher:delnotes' i.id %}">Delete</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+
+</html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    $("#sel_semester").change(function () {
+        var semId = $(this).val();
+        var courseId = document.getElementById("sel_course").value;
+        var ur = "{% url 'Teacher:Ajaxassignsubject' %}";
+        $.ajax({
+            url: ur,
+            data: { semId: semId, courseId: courseId },
+            success: function (data) {
+                $("#sel_subject").html(data);
+            },
+        });
+    });
+</script>
+
+{% if msg %}
+<script>
+  alert("{{msg}}")
+  window.location = "{% url 'Teacher:Addnotes' %}"
+</script>
+{% endif %}

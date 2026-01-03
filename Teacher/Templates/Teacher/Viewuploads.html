@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viewuploads</title>
+</head>
+
+<body>
+    <table border="1">
+        <tr>
+            <td>SlNo</td>
+            <td>Student Name</td>
+            <td>File</td>
+            <td>Date</td>
+            <td>Action</td>
+        </tr>
+        {% for i in submitdata %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ i.student.student_name }}</td>
+            <td><a href="{{ i.ass_file.url }}">View File</a></td>
+            <td>{{ i.ass_date }}</td>
+            <td>
+                {% if i.ass_status == 0 %}
+
+                <a href="{% url 'Teacher:Addmark' i.id %}">Add Mark</a>
+
+                {% else %}
+               Mark : {{i.ass_score}}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</body>
+
+</html>

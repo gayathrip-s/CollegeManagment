@@ -1,0 +1,41 @@
+from django.urls import path
+from Admin import views
+app_name="Admin"
+
+urlpatterns = [
+    path('District/',views.District,name="District"),
+    path('deldistrict/<int:did>/',views.deldistrict,name="deldistrict"),
+    path('editdistrict/<int:eid>/',views.editdistrict,name="editdistrict"),
+    path('AdminReg/',views.AdminReg,name="AdminReg"),
+    path('deladmin/<int:did>/',views.deladmin,name="deladmin"),
+    path('editadmin/<int:eid>/',views.editadmin,name="editadmin"),
+    path('Category/',views.Category,name="Category"),
+    path('delcategory/<int:did>/',views.delcategory,name="delcategory"),
+    path('editcategory/<int:eid>/',views.editcategory,name="editcategory"),
+    path('Place/',views.Place,name="Place"),
+    path('deleteplace/<int:did>/',views.deleteplace,name="deleteplace"),
+    path('editplace/<int:eid>/',views.editplace,name="editplace"),
+    path('Subcategory/',views.Subcategory,name="Subcategory"),
+    path('delsubcategory/<int:did>/',views.delsubcategory,name="delsubcategory"),
+    path('editsubcategory/<int:eid>/',views.editsubcategory,name="editsubcategory"),
+    path('Department/',views.Department,name="Department"),
+    path('deldepartment/<int:did>/',views.deldepartment,name="deldepartment"),
+    path('Semester/',views.Semester,name="Semester"),
+    path('delsemester/<int:did>/',views.delsemester,name="delsemester"),
+    path('Academicyear/',views.Academicyear,name="Academicyear"),
+    path('delacademicyear/<int:did>/',views.delacademicyear,name="delacademicyear"),
+    path('Course/',views.Course,name="Course"),
+    path('delcourse/<int:did>/',views.delcourse,name="delcourse"),
+    path('Subject/',views.Subject,name="Subject"),
+    path('delsubject/<int:did>/',views.delsubject,name="delsubject"),
+    path('Homepage/',views.Homepage,name="Homepage"),
+    path('Ajaxcourse/',views.Ajaxcourse,name="Ajaxcourse"),
+    path('Class/',views.Class,name="Class"),
+    path('delclass/<int:did>/',views.delclass,name="delclass"),
+    path('Addteacher/',views.Addteacher,name="Addteacher"),
+    path('Assignclass/<int:id>/',views.Assignclass,name="Assignclass"),
+    path('Ajaxclass/',views.Ajaxclass,name="Ajaxclass"),
+    path('Assignsubject/<int:id>/',views.Assignsubject,name="Assignsubject"),
+    path('Ajaxsubject/',views.Ajaxsubject,name="Ajaxsubject"),
+    
+]
