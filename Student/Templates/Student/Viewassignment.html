@@ -25,6 +25,8 @@
             <td>{{ i.assignment_duedate }}</td>
             <td>{{ i.subject.course.course_name }}</td>
             <td>{{ i.subject.semester.semester_name }}</td>
+
+            
             <td>{{ i.subject.subject_name }}</td>
             <td><a href="{% url 'Student:Submitassignment' i.id %}">Upload</a></td>
         </tr>
