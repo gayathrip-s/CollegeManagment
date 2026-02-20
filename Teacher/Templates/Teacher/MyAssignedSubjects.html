@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Assigned Subjects</title>
+</head>
+<body>
+    <table border="1">
+        <tr>
+            <td>Sl No</td>
+            <td>Semester</td>
+            <td>Subject</td>
+        </tr>
+            {% for i in assignsubject %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ i.subject.semester.semester_name }}</td>
+            <td>{{ i.subject.subject_name }}</td>
+        </tr>
+            {% endfor %}
+    </table>
+</body>
+</html>

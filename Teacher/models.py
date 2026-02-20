@@ -4,6 +4,7 @@ from Admin.models import *
 class tbl_student(models.Model):
     student_name=models.CharField(max_length=50)
     student_email=models.CharField(max_length=50)
+    student_registernumber=models.CharField(max_length=50,null=True)
     student_contact=models.CharField(max_length=50)
     student_address=models.CharField(max_length=50)
     student_photo=models.FileField(upload_to="Assets/StudentDocs/")
@@ -26,3 +27,21 @@ class tbl_assignment(models.Model):
     assignment_status = models.IntegerField(default=0)
     subject=models.ForeignKey(tbl_subject,on_delete=models.CASCADE)
     teacher=models.ForeignKey(tbl_teacher,on_delete=models.CASCADE)
+
+class tbl_internalmark(models.Model):
+    student=models.ForeignKey(tbl_student,on_delete=models.CASCADE)
+    subject=models.ForeignKey(tbl_subject,on_delete=models.CASCADE)
+    internal_score=models.CharField(max_length=50)
+    internal_date = models.DateField(auto_now_add=True)
+
+class tbl_attendance(models.Model):
+    student = models.ForeignKey(tbl_student, on_delete=models.CASCADE)
+    subject = models.ForeignKey(tbl_subject, on_delete=models.CASCADE)
+    teacher = models.ForeignKey(tbl_teacher, on_delete=models.CASCADE)
+    course = models.ForeignKey(tbl_course, on_delete=models.CASCADE)
+    semester = models.ForeignKey(tbl_semester, on_delete=models.CASCADE)
+    academicyear = models.ForeignKey(tbl_academicyear, on_delete=models.CASCADE)
+    date = models.DateField(auto_now_add=True)
+    hour = models.CharField(max_length=2)  # 1-5
+    status = models.IntegerField(default=0)
+

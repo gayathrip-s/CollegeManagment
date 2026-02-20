@@ -1,56 +1,207 @@
+{% extends 'Admin/Header.html' %}
+
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course</title>
+
+    <style>
+
+        /* ===== Main Wrapper ===== */
+        .course-wrapper {
+            width: 85%;
+            margin: 40px auto;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .course-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: #1f2937;
+        }
+
+        /* ===== Form Card ===== */
+        .course-form-card {
+            width: 100%;
+            max-width: 600px;
+            border-collapse: collapse;
+            background: linear-gradient(135deg, #f0f9ff, #ffffff);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        .course-form-card td {
+            padding: 16px;
+        }
+
+        .course-label {
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .course-input,
+        .course-select {
+            width: 95%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            transition: 0.3s ease;
+            font-size: 14px;
+        }
+
+        .course-input:focus,
+        .course-select:focus {
+            border-color: #10b981;
+            outline: none;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+        }
+
+        .course-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 10px 28px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.3s ease;
+        }
+
+        .course-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(5, 150, 105, 0.4);
+        }
+
+        /* ===== Table Styling ===== */
+        .course-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 15px;
+            overflow: hidden;
+            background: #ffffff;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        .course-table th {
+            background: linear-gradient(135deg, #111827, #1f2937);
+            color: white;
+            padding: 14px;
+            font-weight: 500;
+        }
+
+        .course-table td {
+            padding: 14px;
+            text-align: center;
+        }
+
+        .course-table tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        .course-table tr:hover {
+            background-color: #ecfdf5;
+            transition: 0.3s ease;
+        }
+
+        /* ===== Delete Link ===== */
+        .course-delete-link {
+            color: #ef4444;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.3s ease;
+        }
+
+        .course-delete-link:hover {
+            color: #b91c1c;
+            text-decoration: underline;
+        }
+
+    </style>
 </head>
+
 <body>
+
+<div class="course-wrapper">
+
+    <div class="course-title">Course Management</div>
+
     <form action="" method="post">
         {% csrf_token %}
-        <table border="1">
+        <table border="1" class="course-form-card">
             <tr>
-                <td>Department</td>
-                <td><select name="sel_department" id="sel_department">
-                    <option value="">---select---</option>
-                    {% for i in departmentdata %}
-                    <option value="{{i.id}}">{{i.department_name}}</option>
-                    {% endfor %}
-                </select></td>
+                <td class="course-label">Department</td>
+                <td>
+                    <select name="sel_department" 
+                            id="sel_department" 
+                            required 
+                            class="course-select">
+                        <option value="">--- Select ---</option>
+                        {% for i in departmentdata %}
+                        <option value="{{i.id}}">
+                            {{i.department_name}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </td>
             </tr>
             <tr>
-                <td>Course</td>
-                <td><input type="text" name="txt_course" id="txt_course"></td>
+                <td class="course-label">Course</td>
+                <td>
+                    <input type="text" 
+                           name="txt_course" 
+                           id="txt_course" 
+                           required 
+                           class="course-input">
+                </td>
             </tr>
             <tr>
-                
-                <td colspan="2 " align="center"><input type="submit" value="submit"></td>
+                <td colspan="2" align="center">
+                    <input type="submit" 
+                           value="Submit" 
+                           class="course-btn">
+                </td>
             </tr>
         </table>
     </form>
-    <br>
-    <table border="1">
+
+    <table border="1" class="course-table">
         <tr>
-            <td>SlNo</td>
-            <td>Course Name</td>
-            <td>Department Name</td>
-            <td>Action</td>
+            <th>SlNo</th>
+            <th>Course Name</th>
+            <th>Department Name</th>
+            <th>Action</th>
         </tr>
         {% for i in coursedata %}
         <tr>
             <td>{{ forloop.counter }}</td>
             <td>{{ i.course_name }}</td>
-            <td>{{i.department.department_name}}</td>
-            <td><a href="{% url 'Admin:delcourse' i.id %}">Delete</a>
+            <td>{{ i.department.department_name }}</td>
+            <td>
+                <a href="{% url 'Admin:delcourse' i.id %}" 
+                   class="course-delete-link">
+                   Delete
+                </a>
             </td>
         </tr>
         {% endfor %}
     </table>
+
+</div>
+
 </body>
 </html>
+
 {% if msg %}
 <script>
     alert("{{msg}}")
     window.location = "{% url 'Admin:Course' %}"
 </script>
 {% endif %}
+
+{% endblock %}

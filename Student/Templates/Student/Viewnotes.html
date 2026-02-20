@@ -10,7 +10,7 @@
 <body>
     <table border="1">
         <tr>
-            <td>Semester <select name="sel_semester" id="sel_semester">
+            <td>Semester <select name="sel_semester" id="sel_semester" required>
                     <option value="">--Select--</option>
                     {% for i in semesterdata %}
                     <option value="{{i.id}}">{{i.semester_name}}</option>

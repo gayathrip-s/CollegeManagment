@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duty Leave Application</title>
+</head>
+<body>
+    <form action="" method="post">
+        {% csrf_token %}
+        <table border="1">
+            <tr>
+                <td>Purpose</td>
+                <td><select name="sel_purpose" required id="sel_purpose">
+                <option value="">---select---</option>
+                {% for i in purposedata %}
+                <option value="{{i.id}}">{{i.purpose_name}}</option>
+                {% endfor %}
+            </select></td>
+            </tr>
+            <tr>
+                <td>Reason</td>
+                <td><textarea name="txt_reason" id="txt_reason"></textarea></td>
+            </tr>
+            <tr>
+                <td>Hour</td>
+                <td><input type="text" name="txt_hour" id="txt_hour"></td>
+            </tr>
+            <tr>
+                <td>From Date</td>
+                <td><input type="date" name="txt_fromdate" id="txt_todate"></td>
+            </tr>
+            <tr>
+                <td>To Date</td>
+                <td><input type="date" name="txt_todate" id="txt_todate"></td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center"><input type="submit" value="Apply"></td>
+            </tr>
+        </table>
+    </form>
+    <br>
+    <br>
+    <table border="1">
+        <tr>
+            <td>SlNo</td>
+            <td>Purpose</td>
+            <td>Reason</td>
+            <td>Hour</td>
+            <td>From date</td>
+            <td>To Date</td>
+            <td>Action</td>
+        </tr>
+        {% for i in dutyleavedata %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ i.purpose.purpose_name }}</td>
+            <td>{{ i.dutyleave_reason }}</td>
+            <td>{{ i.dutyleave_hour }}</td>
+            <td>{{ i.dutyleave_fromdate }}</td>
+            <td>{{ i.dutyleave_todate }}</td>
+            <td>
+                {% if i.dutyleave_status == 0 %}
+                <a href="{% url 'Student:deldutyleave' i.id  %}">Delete</a>
+                {% elif i.dutyleave_status == 1 %}
+                Accepted    
+                {% else %}
+                Rejected
+                {% endif %}
+            
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
+{% if msg %}
+<script>
+    alert("{{msg}}")
+    window.location = "{% url 'Student:dutyleave'  %}"
+</script>
+{% endif %}

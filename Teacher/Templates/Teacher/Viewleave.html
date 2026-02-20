@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Leave</title>
+</head>
+
+<body>
+    <table border="1">
+        <tr>
+            <td>SlNo</td>
+            <td>Student Name</td>
+            <td>Student Reg No</td>
+            <td>Photo</td>
+            <td>Title</td>
+            <td>Reason</td>
+            <td>From Date</td>
+            <td>To Date</td>
+            <td>Action</td>
+        </tr>
+        {% for i in leavedata %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ i.student.student_name }}</td>
+            <td>{{ i.student.student_registernumber }}</td>
+            <td align="center"><img src="{{i.student.student_photo.url}}" alt="" width="150"></td>
+            <td>{{ i.leave_title }}</td>
+            <td>{{ i.leave_reason }}</td>
+            <td>{{ i.leave_fromdate }}</td>
+            <td>{{ i.leave_todate }}</td>
+            <td>
+                {% if i.leave_status == 0 %}
+                <a href="{% url 'Teacher:accept' i.id  %}">Accept</a>
+                <a href="{% url 'Teacher:reject' i.id  %}">Reject</a>
+                {% elif i.leave_status == 1 %}
+                Accepted
+                {% else %}
+                Rejected
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+
+</html>
+{% if msg %}
+<script>
+    alert("{{msg}}")
+    window.location = "{% url 'Teacher:viewleave' %}"
+</script>
+{% endif %}

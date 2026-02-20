@@ -16,4 +16,19 @@ urlpatterns = [
    path('delassignment/<int:did>/',views.delassignment,name="delassignment"),
    path('Viewuploads/<int:aid>/',views.Viewuploads,name="Viewuploads"),
    path('Addmark/<int:aid>/',views.Addmark,name="Addmark"),
+   path('Viewstudents/',views.Viewstudents,name="Viewstudents"),
+   path('Addinternalmark/<int:aid>/',views.Addinternalmark,name="Addinternalmark"),
+   path("ViewTimeTable/", views.ViewTimeTable, name="ViewTimeTable"),
+   path("teacherattendance/", views.teacher_attendance, name="teacher_attendance"),
+   path("staffattendance/save/", views.save_attendance_selection, name="save_attendance_selection"),
+   path("viewattendance/<int:sid>", views.viewattendance, name="viewattendance"),
+   path('viewleave/',views.viewleave,name="viewleave"),
+   path('accept/<int:aid>/',views.accept,name="accept"),
+   path('reject/<int:rid>/',views.reject,name="reject"),
+   path('viewdutyleave/',views.viewdutyleave,name="viewdutyleave"),
+   path('acceptduty/<int:aid>/',views.acceptduty,name="acceptduty"),
+   path('rejectduty/<int:rid>/',views.rejectduty,name="rejectduty"),
+   path('myassignedsubject/',views.myassignedsubject,name="myassignedsubject"),
+ 
+   
 ]

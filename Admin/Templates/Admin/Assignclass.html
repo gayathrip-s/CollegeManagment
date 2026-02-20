@@ -1,3 +1,6 @@
+{% extends 'Admin/Header.html' %}
+
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +14,7 @@
         <table border="1">
             <tr>
                 <td>Department</td>
-                <td><select name="sel_department" id="sel_department">
+                <td><select name="sel_department" id="sel_department" required>
                     <option value="">---select---</option>
                     {% for i in departmentdata %}
                     <option value="{{i.id}}">{{i.department_name}}</option>
@@ -20,20 +23,20 @@
             </tr>
             <tr>
                 <td>Course</td>
-                <td><select name="sel_course" id="sel_course">
+                <td><select name="sel_course" id="sel_course" required>
                     <option value="">---select---</option>
                 </select>
             </td>
             </tr>
             <tr>
                 <td>Class</td>
-                <td><select name="sel_class" id="sel_class">
+                <td><select name="sel_class" id="sel_class" required>
                     <option value="">---select---</option>
                 </select></td>
             </tr>
             <tr>
                 <td>Academic Year</td>
-                <td><select name="sel_academicyear" id="sel_academicyear">
+                <td><select name="sel_academicyear" id="sel_academicyear" required>
                     <option value="">---select---</option>
                     {% for i in academicyeardata %}
                     <option value="{{i.id}}">{{i.academicyear_name}}</option>
@@ -63,7 +66,8 @@
         <td>{{ i.Class.course.course_name }}</td>
         <td>{{ i.Class.class_name }}</td>
         <td>{{ i.academicyear.academicyear_name }}</td>
-        <td><a href="">Delete</a></td>
+        <td><a href="{% url 'Admin:delassignclass' i.id %}">Delete</a>
+        <a href="{% url 'Admin:classsem' i.id %}">Add Semester</a></td>
       </tr>
         {% endfor %}
     </table>
@@ -105,3 +109,5 @@
     window.location = "{% url 'Admin:Assignclass' %}"
 </script>
 {% endif %}
+
+{% endblock %}

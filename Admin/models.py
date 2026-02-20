@@ -62,6 +62,23 @@ class tbl_assignsubject(models.Model):
     academicyear = models.ForeignKey(tbl_academicyear,on_delete=models.CASCADE)
     subject=models.ForeignKey(tbl_subject,on_delete=models.CASCADE)
 
+class tbl_classsem(models.Model):
+    semester = models.ForeignKey(tbl_semester,on_delete=models.CASCADE)
+    assignclass = models.ForeignKey(tbl_assignclass,on_delete=models.CASCADE)
 
 
+class tbl_timetable(models.Model):
+    course = models.ForeignKey(tbl_course,on_delete=models.CASCADE)
+    semester = models.ForeignKey(tbl_semester,on_delete=models.CASCADE)
+    academicyear = models.ForeignKey(tbl_academicyear,on_delete=models.CASCADE)
+    day = models.CharField(max_length=20)
+    hour = models.CharField(max_length=5)
+    subject = models.ForeignKey(tbl_subject,on_delete=models.CASCADE)
+    teacher_id = models.ForeignKey(tbl_teacher,on_delete=models.CASCADE)
 
+class tbl_purpose(models.Model):
+    purpose_name = models.CharField(max_length=100)
+
+class tbl_incharge(models.Model):
+    teacher = models.ForeignKey(tbl_teacher,on_delete=models.CASCADE)
+    purpose = models.ForeignKey(tbl_purpose,on_delete=models.CASCADE)

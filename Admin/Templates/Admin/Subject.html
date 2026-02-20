@@ -1,91 +1,235 @@
+{% extends 'Admin/Header.html' %}
+
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=\, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Subject</title>
+
+    <style>
+
+        /* ===== Wrapper ===== */
+        .sub-wrapper {
+            width: 90%;
+            margin: 40px auto;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .sub-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: #1e293b;
+        }
+
+        /* ===== Form Card ===== */
+        .sub-form-card {
+            width: 100%;
+            max-width: 750px;
+            border-collapse: collapse;
+            background: linear-gradient(135deg, #fdfbfb, #ebedee);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border-radius: 18px;
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        .sub-form-card td {
+            padding: 16px;
+        }
+
+        .sub-label {
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .sub-input,
+        .sub-select {
+            width: 95%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            transition: 0.3s ease;
+            font-size: 14px;
+            background-color: #ffffff;
+        }
+
+        .sub-input:focus,
+        .sub-select:focus {
+            border-color: #8b5cf6;
+            outline: none;
+            box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
+        }
+
+        .sub-btn {
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            color: white;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.3s ease;
+        }
+
+        .sub-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(109, 40, 217, 0.4);
+        }
+
+        /* ===== Table ===== */
+        .sub-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 18px;
+            overflow: hidden;
+            background: #ffffff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .sub-table th {
+            background: linear-gradient(135deg, #111827, #312e81);
+            color: white;
+            padding: 14px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .sub-table td {
+            padding: 14px;
+            text-align: center;
+        }
+
+        .sub-table tr:nth-child(even) {
+            background-color: #f5f3ff;
+        }
+
+        .sub-table tr:hover {
+            background-color: #ede9fe;
+            transition: 0.3s ease;
+        }
+
+        /* ===== Delete Link ===== */
+        .sub-delete-link {
+            color: #ef4444;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.3s ease;
+        }
+
+        .sub-delete-link:hover {
+            color: #b91c1c;
+            text-decoration: underline;
+        }
+
+    </style>
 </head>
+
 <body>
+
+<div class="sub-wrapper">
+
+    <div class="sub-title">Subject Management</div>
+
     <form action="" method="post">
         {% csrf_token %}
-        <table border="1">
+        <table border="1" class="sub-form-card">
             <tr>
-                <td>Department</td>
-                <td><select name="sel_department" id="sel_department">
-                    <option value="">---select---</option>
-                    {% for i in departmentdata %}
-                    <option value="{{i.id}}">{{i.department_name}}</option>
-                    {% endfor %}
-                </select></td>
-            </tr>
-            <tr>
-                <td>Course</td>
-                <td><select name="sel_course" id="sel_course">
-                    <option value="">---select---</option>
-                </select></td>
-            </tr>
-            <tr>
-                <td>Semester</td>
+                <td class="sub-label">Department</td>
                 <td>
-                    <select name="sel_semester" id="sel_semester">
-                    <option value="">---select---</option>
-                    {% for i in semesterdata %}
-                    <option value="{{i.id}}">{{i.semester_name}}</option>
-                    {% endfor %}
-                </select></td>
+                    <select name="sel_department" id="sel_department" required class="sub-select">
+                        <option value="">--- Select ---</option>
+                        {% for i in departmentdata %}
+                        <option value="{{i.id}}">{{i.department_name}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
             </tr>
             <tr>
-                <td>Subject</td>
-                <td><input type="text" name="txt_subject" id="txt_subject"></td>
+                <td class="sub-label">Course</td>
+                <td>
+                    <select name="sel_course" id="sel_course" required class="sub-select">
+                        <option value="">--- Select ---</option>
+                    </select>
+                </td>
             </tr>
             <tr>
-                
-                <td colspan="2" align="center"><input type="submit" value="submit"></td>
+                <td class="sub-label">Semester</td>
+                <td>
+                    <select name="sel_semester" id="sel_semester" required class="sub-select">
+                        <option value="">--- Select ---</option>
+                        {% for i in semesterdata %}
+                        <option value="{{i.id}}">{{i.semester_name}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="sub-label">Subject</td>
+                <td>
+                    <input type="text" name="txt_subject" id="txt_subject" required class="sub-input">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <input type="submit" value="Submit" class="sub-btn">
+                </td>
             </tr>
         </table>
     </form>
-    <br>
-    <table border="1">
+
+    <table border="1" class="sub-table">
         <tr>
-            <td>SlNo</td>
-            <td>Department </td>
-            <td>Course </td>
-            <td>Semester </td>
-            <td>Subject</td>
-            <td>Action</td>
+            <th>SlNo</th>
+            <th>Department</th>
+            <th>Course</th>
+            <th>Semester</th>
+            <th>Subject</th>
+            <th>Action</th>
         </tr>
         {% for i in subjectdata %}
         <tr>
             <td>{{ forloop.counter }}</td>
             <td>{{ i.course.department.department_name }}</td>
-            <td>{{i.course.course_name}}</td>
-            <td>{{i.semester.semester_name}}</td>
-            <td>{{i.subject_name}}</td>
-            <td><a href="{% url 'Admin:delsubject' i.id %}">Delete</a>
+            <td>{{ i.course.course_name }}</td>
+            <td>{{ i.semester.semester_name }}</td>
+            <td>{{ i.subject_name }}</td>
+            <td>
+                <a href="{% url 'Admin:delsubject' i.id %}" class="sub-delete-link">
+                    Delete
+                </a>
             </td>
         </tr>
         {% endfor %}
     </table>
 
+</div>
+
 </body>
 </html>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
     $("#sel_department").change(function () {
-      var disid = $(this).val();
-      var ur = "{% url 'Admin:Ajaxcourse' %}";
-      $.ajax({
-        url: ur,
-        data: { disid: disid },
-        success: function (data) {
-          $("#sel_course").html(data);
-        },
-      });
+        var disid = $(this).val();
+        var ur = "{% url 'Admin:Ajaxcourse' %}";
+        $.ajax({
+            url: ur,
+            data: { disid: disid },
+            success: function (data) {
+                $("#sel_course").html(data);
+            },
+        });
     });
-  </script>
+</script>
+
 {% if msg %}
 <script>
     alert("{{msg}}")
     window.location = "{% url 'Admin:Subject' %}"
 </script>
 {% endif %}
+
+{% endblock %}

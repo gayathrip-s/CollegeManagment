@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Attendance</title>
+</head>
+<body>
+
+<h2> Attendance Details </h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    Select Semester:
+    <select name="sel_semester" required>
+        <option value="">-- Select Semester --</option>
+        {% for s in semesterdata %}
+        <option value="{{ s.id }}" {% if s.id|stringformat:"s" == selected_semester %}selected{% endif %}>
+            {{ s.semester_name }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">View</button>
+</form>
+
+<hr>
+
+<table border="1" cellpadding="10">
+    <tr>
+        <th>Date</th>
+        <th>Subject</th>
+        <th>Teacher</th>
+        <th>Hour</th>
+        <th>Status</th>
+    </tr>
+
+    {% for a in attendancedata %}
+    <tr>
+        <td>{{ a.date }}</td>
+        <td>{{ a.subject.subject_name }}</td>
+        <td>{{ a.teacher.teacher_name }}</td>
+        <td>{{ a.hour }}</td>
+        <td>
+            {% if a.status == 1 %}
+                <span style="color:green;">Present</span>
+            {% else %}
+                <span style="color:red;">Absent</span>
+            {% endif %}
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="5" align="center">No attendance records found</td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>

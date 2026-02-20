@@ -11,15 +11,16 @@
         <table border="1">
             <tr>
                 <td>Name</td>
-                <td><input type="text" name="txt_name" id="txt_name" value="{{teacher.teacher_name}}"></td>
+                <td><input type="text"required name="txt_name" id="txt_name" value="{{teacher.teacher_name}}"title="Name Allows Only Alphabets,Spaces and First Letter Must Be Capital Letter" pattern="^[A-Z]+[a-zA-Z ]*$"/></td>
             </tr>
             <tr>
                 <td>Email</td>
-                <td><input type="text" name="txt_email" id="txt_email" value="{{teacher.teacher_email}}"></td>
+                <td><input type="email"required name="txt_email" id="txt_email" value="{{teacher.teacher_email}}"></td>
             </tr>
             <tr>
                 <td>Contact</td>
-                <td><input type="text" name="txt_contact" id="txt_contact" value="{{teacher.teacher_contact}}"></td>
+                <td><input type="text"required name="txt_contact" id="txt_contact" value="{{teacher.teacher_contact}}" pattern="[6-9]{1}[0-9]{9}" 
+                title="Phone number with 7-9 and remaing 9 digit with 0-9"/></td>
             </tr>
             <tr>
                 

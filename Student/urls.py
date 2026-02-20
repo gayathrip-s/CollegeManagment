@@ -14,4 +14,12 @@ urlpatterns = [
     path('Submitassignment/<int:aid>/',views.Submitassignment,name="Submitassignment"),
     path('delassign/<int:did>/<aid>/',views.delassign,name="delassign"),
     path('Myassignments/',views.Myassignments,name="Myassignments"),
+    path("ViewTimeTable/", views.ViewTimeTable, name="ViewTimeTable"),
+    path("Complaint/", views.Complaint, name="Complaint"),
+    path('delcomplaint/<int:did>/',views.delcomplaint,name="delcomplaint"),
+    path("viewattendance/", views.viewattendance, name="viewattendance"),
+    path("leaveapplication/", views.leaveapplication, name="leaveapplication"),
+    path('delleave/<int:did>/',views.delleave,name="delleave"),
+    path('dutyleave/',views.dutyleave,name="dutyleave"),
+    path('deldutyleave/<int:did>/',views.deldutyleave,name="deldutyleave"),
 ]

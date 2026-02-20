@@ -1,91 +1,290 @@
+{% extends 'Admin/Header.html' %}
+
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>Add Teacher</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AddTeacher</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        body{
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg,#667eea,#764ba2);
+            margin:0;
+            padding:30px;
+        }
+
+        .main-container{
+            max-width:1200px;
+            margin:auto;
+        }
+
+        .card{
+            background:white;
+            border-radius:15px;
+            box-shadow:0 10px 30px rgba(0,0,0,0.2);
+            padding:30px;
+            margin-bottom:40px;
+        }
+
+        h2{
+            text-align:center;
+            margin-bottom:25px;
+            color:#333;
+        }
+
+        .form-table{
+            width:100%;
+        }
+
+        .form-table td{
+            padding:12px;
+        }
+
+        .form-table input[type="text"],
+        .form-table input[type="email"],
+        .form-table input[type="password"],
+        .form-table input[type="file"],
+        .form-table select{
+            width:100%;
+            padding:10px;
+            border-radius:8px;
+            border:1px solid #ccc;
+            transition:0.3s;
+        }
+
+        .form-table input:focus,
+        .form-table select:focus{
+            border-color:#667eea;
+            box-shadow:0 0 5px rgba(102,126,234,0.5);
+            outline:none;
+        }
+
+        .radio-group{
+            display:flex;
+            gap:20px;
+        }
+
+        .btn-submit{
+            background:#667eea;
+            color:white;
+            padding:10px 25px;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+            font-weight:500;
+            transition:0.3s;
+        }
+
+        .btn-submit:hover{
+            background:#5a67d8;
+        }
+
+        .btn-clear{
+            background:#e53e3e;
+            color:white;
+            padding:10px 25px;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+            font-weight:500;
+            transition:0.3s;
+        }
+
+        .btn-clear:hover{
+            background:#c53030;
+        }
+
+        .table-container{
+            overflow-x:auto;
+        }
+
+        .data-table{
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        .data-table th{
+            background:#667eea;
+            color:white;
+            padding:12px;
+        }
+
+        .data-table td{
+            padding:10px;
+            text-align:center;
+            border-bottom:1px solid #eee;
+        }
+
+        .data-table tr:hover{
+            background:#f3f4f6;
+        }
+
+        .action-link{
+            text-decoration:none;
+            padding:6px 10px;
+            border-radius:6px;
+            font-size:13px;
+            color:white;
+            margin:2px;
+            display:inline-block;
+        }
+
+        .assign-class{ background:#38a169; }
+        .assign-subject{ background:#3182ce; }
+        .assign-incharge{ background:#d69e2e; }
+
+        .action-link:hover{
+            opacity:0.85;
+        }
+
+        @media(max-width:768px){
+            .radio-group{
+                flex-direction:column;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <form action="" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <table border="1">
-            <tr>
-                <td>Name</td>
-                <td><input type="text" name="txt_name" id="txt_name"></td>
-            </tr>
-            <tr>
-                <td>Email</td>
-                <td><input type="text" name="txt_email" id="txt_email"></td>
-            </tr>
-            <tr>
-                <td>Contact</td>
-                <td><input type="text" name="txt_contact" id="txt_contact"></td>
-            </tr>
-            <tr>
-                <td>Role</td>
-                <td><input type="radio" name="txt_role" id="txt_role" value="Staff">Staff
-                <input type="radio" name="txt_role" id="txt_role" value="HOD">HOD</td>
-            </tr>
-            <tr>
-                <td>Gender</td>
-                <td><input type="radio" name="txt_gender" id="txt_gender" value="Male">Male
-                <input type="radio" name="txt_gender" id="txt_gender" value="Female">Female</td>
-            </tr>
-            <tr>
-                <td>Photo</td>
-                <td><input type="file" name="file_photo" id="file_photo"></td>
-            </tr>
-            <tr>
-                <td>Department</td>
-                <td><select name="sel_department" id="sel_department">
-                    <option value="">---select---</option>
-                    {% for i in departmentdata %}
-                    <option value="{{i.id}}">{{i.department_name}}</option>
-                    {% endfor %}
-                </select></td>
-            </tr>
-            <tr>
-                <td>Password</td>
-                <td><input type="password" name="txt_password" id="txt_password"></td>
-            </tr>
-            <tr>
-                
-                <td colspan="2" align="center"><input type="submit" value="Submit">
-                    <input type="submit" value="Clear"></td>
-            </tr>
-        </table>
-    </form>
-    <br>
-    <table border="1">
-        <tr>
-            <td>SlNo</td>
-            <td>Name</td>
-            <td>Email</td>
-            <td>Contact</td>
-            <td>Role</td>
-            <td>Gender</td>
-            <td>Department</td>
-            <td>Action</td>
-        </tr>
-        {% for i in teacherdata %}
-        <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ i.teacher_name }}</td>
-            <td>{{ i.teacher_email }}</td>
-            <td>{{ i.teacher_contact }}</td>
-            <td>{{ i.teacher_role }}</td>
-            <td>{{ i.teacher_gender }}</td>
-            <td>{{i.department.department_name}}</td>
-            <td><a href="{% url 'Admin:Assignclass' i.id %}">Assign Class</a>
-                <a href="{% url 'Admin:Assignsubject' i.id %}">Assign Subject</a></td>
-        </tr>
-        {% endfor %}
-    </table>
+
+<div class="main-container">
+
+    <!-- ADD TEACHER FORM -->
+    <div class="card">
+        <h2>Add Teacher</h2>
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <table class="form-table">
+
+                <tr>
+                    <td>Name</td>
+                    <td>
+                        <input type="text" required name="txt_name"
+                        pattern="^[A-Z]+[a-zA-Z ]*$"
+                        title="Name Allows Only Alphabets,Spaces and First Letter Must Be Capital Letter">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Email</td>
+                    <td><input type="email" required name="txt_email"></td>
+                </tr>
+
+                <tr>
+                    <td>Contact</td>
+                    <td>
+                        <input type="text" required name="txt_contact"
+                        pattern="[6-9]{1}[0-9]{9}"
+                        title="Phone number must start with 6-9 and contain 10 digits">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Role</td>
+                    <td class="radio-group">
+                        <label><input type="radio" required name="txt_role" value="Staff"> Staff</label>
+                        <label><input type="radio" name="txt_role" value="HOD"> HOD</label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Gender</td>
+                    <td class="radio-group">
+                        <label><input type="radio" required name="txt_gender" value="Male"> Male</label>
+                        <label><input type="radio" name="txt_gender" value="Female"> Female</label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Photo</td>
+                    <td><input type="file" name="file_photo" required accept="image/*"></td>
+                </tr>
+
+                <tr>
+                    <td>Department</td>
+                    <td>
+                        <select name="sel_department" required>
+                            <option value="">---select---</option>
+                            {% for i in departmentdata %}
+                            <option value="{{i.id}}">{{i.department_name}}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Password</td>
+                    <td>
+                        <input type="password" required name="txt_password"
+                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                        title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 characters">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="2" align="center">
+                        <button type="submit" class="btn-submit">Submit</button>
+                        <button type="reset" class="btn-clear">Clear</button>
+                    </td>
+                </tr>
+
+            </table>
+        </form>
+    </div>
+
+
+    <!-- TEACHER LIST TABLE -->
+    <div class="card">
+        <h2>Teacher List</h2>
+        <div class="table-container">
+            <table class="data-table">
+                <tr>
+                    <th>SlNo</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Contact</th>
+                    <th>Role</th>
+                    <th>Gender</th>
+                    <th>Department</th>
+                    <th>Action</th>
+                </tr>
+
+                {% for i in teacherdata %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ i.teacher_name }}</td>
+                    <td>{{ i.teacher_email }}</td>
+                    <td>{{ i.teacher_contact }}</td>
+                    <td>{{ i.teacher_role }}</td>
+                    <td>{{ i.teacher_gender }}</td>
+                    <td>{{ i.department.department_name }}</td>
+                    <td>
+                        <a href="{% url 'Admin:Assignclass' i.id %}" class="action-link assign-class">Assign Class</a>
+                        <a href="{% url 'Admin:Assignsubject' i.id %}" class="action-link assign-subject">Assign Subject</a>
+                        <a href="{% url 'Admin:Assignincharge' i.id %}" class="action-link assign-incharge">Assign InCharge</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+</div>
+
 </body>
 </html>
+
 {% if msg %}
 <script>
     alert("{{msg}}")
     window.location = "{% url 'Admin:Addteacher' %}"
 </script>
 {% endif %}
+
+{% endblock %}

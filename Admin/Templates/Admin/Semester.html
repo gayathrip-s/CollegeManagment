@@ -1,46 +1,180 @@
+{% extends 'Admin/Header.html' %}
+
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Semester</title>
+
+    <style>
+
+        /* ===== Wrapper ===== */
+        .sem-wrapper {
+            width: 80%;
+            margin: 40px auto;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* ===== Title ===== */
+        .sem-title {
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #2c3e50;
+        }
+
+        /* ===== Form Card ===== */
+        .sem-form-table {
+            width: 100%;
+            max-width: 500px;
+            border-collapse: collapse;
+            background: linear-gradient(135deg, #e3f2fd, #ffffff);
+            box-shadow: 0px 6px 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 35px;
+        }
+
+        .sem-form-table td {
+            padding: 14px;
+        }
+
+        /* ===== Input ===== */
+        .sem-input {
+            width: 95%;
+            padding: 9px;
+            border-radius: 6px;
+            border: 1px solid #bbb;
+            transition: 0.3s ease;
+        }
+
+        .sem-input:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 8px rgba(52,152,219,0.5);
+        }
+
+        /* ===== Button ===== */
+        .sem-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 9px 22px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.3s ease;
+        }
+
+        .sem-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #1f6391);
+            transform: scale(1.05);
+        }
+
+        /* ===== Table ===== */
+        .sem-table {
+            width: 100%;
+            border-collapse: collapse;
+            box-shadow: 0px 6px 15px rgba(0,0,0,0.08);
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .sem-table th {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 12px;
+        }
+
+        .sem-table td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        .sem-table tr:nth-child(even) {
+            background-color: #f4f8fb;
+        }
+
+        .sem-table tr:hover {
+            background-color: #eaf3ff;
+            transition: 0.3s;
+        }
+
+        /* ===== Delete Link ===== */
+        .sem-delete-link {
+            color: #e74c3c;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.3s ease;
+        }
+
+        .sem-delete-link:hover {
+            color: #c0392b;
+            text-decoration: underline;
+        }
+
+    </style>
 </head>
+
 <body>
+
+<div class="sem-wrapper">
+
+    <div class="sem-title">Semester Management</div>
+
     <form action="" method="post">
         {% csrf_token %}
-        <table border="1">
+        <table border="1" class="sem-form-table">
             <tr>
                 <td>Semester</td>
-                <td><input type="text" name="txt_semester" id="txt_semester"></td>
+                <td>
+                    <input type="text" name="txt_semester" 
+                           id="txt_semester" 
+                           class="sem-input" 
+                           required>
+                </td>
             </tr>
             <tr>
-                
-                <td colspan="2" align="center"><input type="submit" value="submit"></td>
+                <td colspan="2" align="center">
+                    <input type="submit" value="Submit" class="sem-btn">
+                </td>
             </tr>
         </table>
     </form>
-    <br>
-     <table border="1">
+
+    <table border="1" class="sem-table">
         <tr>
-            <td>SlNo</td>
-            <td>Semester</td>
-            <td>Action</td>
+            <th>SlNo</th>
+            <th>Semester</th>
+            <th>Action</th>
         </tr>
         {% for i in semesterdata %}
         <tr>
             <td>{{ forloop.counter }}</td>
             <td>{{ i.semester_name }}</td>
-            <td><a href="{% url 'Admin:delsemester' i.id %}">Delete</a>
+            <td>
+                <a href="{% url 'Admin:delsemester' i.id %}" 
+                   class="sem-delete-link">
+                   Delete
+                </a>
             </td>
         </tr>
         {% endfor %}
     </table>
-    
+
+</div>
+
 </body>
 </html>
+
 {% if msg %}
 <script>
     alert("{{msg}}")
     window.location = "{% url 'Admin:Semester' %}"
 </script>
 {% endif %}
+
+{% endblock %}

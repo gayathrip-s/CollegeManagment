@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Duty Leaves</title>
+</head>
+<body>
+
+<h2>Duty Leave Requests</h2>
+
+<table border="1" cellpadding="8">
+    <tr>
+        <td>SlNo</td>
+        <td>Student Name</td>
+        <td>Student Reg No</td>
+        <td>Purpose</td>
+        <td>Reason</td>
+        <td>Hour</td>
+        <td>From Date</td>
+        <td>To Date</td>
+        <td>Status / Action</td>
+    </tr>
+
+    {% for i in dutyleavedata %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ i.student.student_name }}</td>
+        <td>{{ i.student.student_registernumber }}</td>
+        <td>{{ i.purpose.purpose_name }}</td>
+        <td>{{ i.dutyleave_reason }}</td>
+        <td>{{ i.dutyleave_hour }}</td>
+        <td>{{ i.dutyleave_fromdate }}</td>
+        <td>{{ i.dutyleave_todate }}</td>
+
+        <td>
+            {% if i.dutyleave_status == 0 %}
+                <a href="{% url 'Teacher:acceptduty' i.id %}">Accept</a> |
+                <a href="{% url 'Teacher:rejectduty' i.id %}">Reject</a>
+            {% elif i.dutyleave_status == 1 %}
+                <span style="color:green;">Accepted</span>
+            {% else %}
+                <span style="color:red;">Rejected</span>
+            {% endif %}
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="9" align="center">No Duty Leave Requests</td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>
+
+{% if msg %}
+<script>
+    alert("{{msg}}")
+    window.location = "{% url 'Teacher:viewdutyleave' %}"
+</script>
+{% endif %}
+

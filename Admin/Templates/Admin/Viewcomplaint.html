@@ -1,0 +1,38 @@
+{% extends 'Admin/Header.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Complaints</title>
+</head>
+<body>
+    <table border="1">
+        <tr>
+            <td>SlNo</td>
+            <td>Student Details</td>
+            <td>Title</td>
+            <td>Content</td>
+            <td>Date</td>
+            <td>Reply</td>
+            <td>Action</td>
+        </tr>
+        {% for i in complaintdata %}
+        <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{ i.student.student_name }}</td>
+            <td>{{ i.comp_title }}</td>
+            <td>{{ i.com_content }}</td>
+            <td>{{ i.com_date }}</td>
+            <td>{{ i.com_reply }}</td>
+            <td><a href="{% url 'Admin:Replycomplaint' i.id %}">Reply</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+</body>
+</html>
+
+{% endblock %}

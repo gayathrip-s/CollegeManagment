@@ -11,15 +11,15 @@
     <table border="1">
         <tr>
             <td>Old Password</td>
-            <td><input type="password" name="txt_password" id="txt_password"></td>
+            <td><input type="password"required name="txt_password" id="txt_password"></td>
         </tr>
         <tr>
             <td> New Password</td>
-            <td><input type="password" name="txt_newpassword" id="txt_newpassword"></td>
+            <td><input type="password"required name="txt_newpassword" id="txt_newpassword" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required name="txt_pass" /></td>
         </tr>
         <tr>
             <td>Re-type Password</td>
-            <td><input type="password" name="txt_repassword" id="txt_repassword"></td>
+            <td><input type="password"required name="txt_repassword" id="txt_repassword"></td>
         </tr>
         <tr>
             
