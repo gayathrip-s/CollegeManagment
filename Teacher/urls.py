@@ -19,8 +19,8 @@ urlpatterns = [
    path('Viewstudents/',views.Viewstudents,name="Viewstudents"),
    path('Addinternalmark/<int:aid>/',views.Addinternalmark,name="Addinternalmark"),
    path("ViewTimeTable/", views.ViewTimeTable, name="ViewTimeTable"),
-   path("teacherattendance/", views.teacher_attendance, name="teacher_attendance"),
-   path("staffattendance/save/", views.save_attendance_selection, name="save_attendance_selection"),
+   path("student_attendance/", views.student_attendance, name="student_attendance"),
+   path("student_attendance/save/", views.save_attendance_selection, name="save_attendance_selection"),
    path("viewattendance/<int:sid>", views.viewattendance, name="viewattendance"),
    path('viewleave/',views.viewleave,name="viewleave"),
    path('accept/<int:aid>/',views.accept,name="accept"),
@@ -30,5 +30,6 @@ urlpatterns = [
    path('rejectduty/<int:rid>/',views.rejectduty,name="rejectduty"),
    path('myassignedsubject/',views.myassignedsubject,name="myassignedsubject"),
  
+   path('updateattendance/',views.updateattendance,name="updateattendance"),
    
 ]

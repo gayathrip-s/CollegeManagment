@@ -21,5 +21,6 @@ urlpatterns = [
     path("leaveapplication/", views.leaveapplication, name="leaveapplication"),
     path('delleave/<int:did>/',views.delleave,name="delleave"),
     path('dutyleave/',views.dutyleave,name="dutyleave"),
+    path('logout/', views.logout, name="logout"),
     path('deldutyleave/<int:did>/',views.deldutyleave,name="deldutyleave"),
 ]

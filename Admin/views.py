@@ -469,7 +469,7 @@ def Replycomplaint(request,did):
         complaintdata.save()
         return render(request,"Admin/Viewcomplaint.html",{'msg':"Replied Successfully..."})
     else:
-        return render(request,"Admin/Viewcomplaint.html",{'complaintdata':complaintdata})
+        return render(request,"Admin/Replycomplaint.html",{'complaintdata':complaintdata})
     
 def Purpose(request):
     purposedata = tbl_purpose.objects.all()

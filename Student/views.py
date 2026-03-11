@@ -1,9 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from Teacher.models import *
 from Admin.models import *
 from Student.models import *
 from django.db.models import Count, Q
-from datetime import date
+from datetime import date,timedelta
 from django.utils import timezone
 
 
@@ -148,25 +148,27 @@ def Complaint(request):
 def delcomplaint(request,did):
     tbl_complaint.objects.get(id=did).delete()
     return render(request,"Student/Complaint.html",{'msg':"Data Deleted..."})
+
+
+
+
 def viewattendance(request):
     studentdata = tbl_student.objects.get(id=request.session['sid'])
     semesterdata = tbl_semester.objects.all()
 
     today = timezone.now().date()
 
-    # ✅ Get Last Inserted Class Semester
-    last_classsem = tbl_classsem.objects.all().order_by('-id').first()
-
-    current_semester = None
-    if last_classsem:
-        current_semester = last_classsem.semester  # assuming FK name is semester
-
     attendancedata = None
+    subjectwise = None
     overall_percentage = 0
+
+    last_classsem = tbl_classsem.objects.all().order_by('-id').first()
+    current_semester = last_classsem.semester if last_classsem else None
 
     if request.method == "POST":
 
         selected_semester = request.POST.get("sel_semester")
+        filter_type = request.POST.get("filter_type")
         from_date = request.POST.get("from_date")
         to_date = request.POST.get("to_date")
 
@@ -175,37 +177,64 @@ def viewattendance(request):
         if selected_semester:
             attendancedata = attendancedata.filter(semester_id=selected_semester)
 
-        if from_date and to_date:
-            attendancedata = attendancedata.filter(date__range=[from_date, to_date])
+        # Daily
+        if filter_type == "daily":
+            attendancedata = attendancedata.filter(date=today)
 
-    else:
-        # ✅ Default: Today's attendance of last inserted semester
-        if current_semester:
-            attendancedata = tbl_attendance.objects.filter(
-                student=studentdata,
-                semester=current_semester,
-                date=today
+        # Weekly
+        elif filter_type == "weekly":
+            start_week = today - timedelta(days=today.weekday())
+            end_week = start_week + timedelta(days=6)
+            attendancedata = attendancedata.filter(date__range=[start_week, end_week])
+
+        # Monthly
+        elif filter_type == "monthly":
+            attendancedata = attendancedata.filter(
+                date__month=today.month,
+                date__year=today.year
             )
 
-    # ✅ Overall attendance of current semester
-    if current_semester:
-        semester_attendance = tbl_attendance.objects.filter(
-            student=studentdata,
-            semester=current_semester
+        # Date Range
+        elif filter_type == "range":
+            if from_date and to_date:
+                attendancedata = attendancedata.filter(date__range=[from_date, to_date])
+
+        # ✅ Overall Percentage Calculation
+        total_classes = attendancedata.count()
+        present_classes = attendancedata.filter(status=1).count()
+
+        if total_classes > 0:
+            overall_percentage = (present_classes / total_classes) * 100
+
+        # Subject-wise Attendance
+        subjectwise = attendancedata.values(
+            'subject__subject_name'
+        ).annotate(
+            total=Count('id'),
+            present=Count('id', filter=Q(status=1))
         )
 
-        total = semester_attendance.count()
-        present = semester_attendance.filter(status=1).count()
+    else:
+        attendancedata = tbl_attendance.objects.filter(
+            student=studentdata,
+            semester=current_semester,
+            date=today
+        )
 
-        if total > 0:
-            overall_percentage = (present / total) * 100
+        # Default percentage (today)
+        total_classes = attendancedata.count()
+        present_classes = attendancedata.filter(status=1).count()
+
+        if total_classes > 0:
+            overall_percentage = (present_classes / total_classes) * 100
+
 
     return render(request, "Student/ViewAttendance.html", {
         "semesterdata": semesterdata,
         "attendancedata": attendancedata,
-        "selected_semester": current_semester.id if current_semester else None,
-        "today": today,
-        "overall_percentage": overall_percentage
+        "subjectwise": subjectwise,
+        "overall_percentage": overall_percentage,
+        "selected_semester": current_semester.id if current_semester else None
     })
 
 def leaveapplication(request):
@@ -249,8 +278,9 @@ def deldutyleave(request,did):
          
          
     
-   
-  
+def logout(request):
+    del request.session['sid']
+    return redirect('Guest:Login')
   
     
    

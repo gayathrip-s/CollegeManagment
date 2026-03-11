@@ -4,6 +4,10 @@ from Admin.models import *
 from Teacher.models import *
 
 # Create your views here.
+
+def index(request):
+    return render(request,"Guest/index.html")
+
 def UserReg(request):
     
     districtdata=tbl_district.objects.all()

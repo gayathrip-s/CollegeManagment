@@ -172,13 +172,16 @@ HOURS = [
 
 def ViewTimeTable(request):
     teacher = tbl_teacher.objects.get(id=request.session["tid"])
+    print(teacher)
     academicyear = tbl_academicyear.objects.order_by('-id').first()
+    print(academicyear)
     timetable = tbl_timetable.objects.none()
     if academicyear:
         timetable = tbl_timetable.objects.filter(
             teacher_id=teacher,
             academicyear=academicyear
         )
+        print(timetable)
     return render(request, "Teacher/ViewTimeTable.html", {
         "teacher": teacher,
         "timetable": timetable,
@@ -187,7 +190,7 @@ def ViewTimeTable(request):
         "academicyear": academicyear
     })
 
-def teacher_attendance(request):
+def student_attendance(request):
     teacher = tbl_teacher.objects.get(id=request.session["tid"])
     academicyear = tbl_academicyear.objects.order_by('-id').first()
 
@@ -303,20 +306,52 @@ def save_attendance_selection(request):
                     defaults={"status": int(status)}
                 )
 
-        return redirect("Teacher:teacher_attendance")
-def viewattendance(request,sid):
+        return redirect("Teacher:student_attendance")
+def viewattendance(request, sid):
+
     studentdata = tbl_student.objects.get(id=sid)
     semesterdata = tbl_semester.objects.all()
-    selected_semester = None
-    if request.method == "POST":
-      attendancedata = tbl_attendance.objects.filter(student=studentdata)
-      selected_semester = request.POST.get("sel_semester")
-      attendancedata = attendancedata.filter(semester_id=selected_semester)
-      return render(request, "Student/ViewAttendance.html", {"semesterdata": semesterdata,"attendancedata": attendancedata,"selected_semester": selected_semester})
-    else:
-      return render(request, "Student/ViewAttendance.html", {"semesterdata": semesterdata})
 
-      
+    attendancedata = None
+    selected_semester = None
+    selected_date = None
+
+    if request.method == "POST":
+
+        selected_semester = request.POST.get("sel_semester")
+        selected_date = request.POST.get("sel_date")
+
+        attendancedata = tbl_attendance.objects.filter(
+            student=studentdata
+        )
+
+        if selected_semester:
+            attendancedata = attendancedata.filter(semester_id=selected_semester)
+
+        if selected_date:
+            attendancedata = attendancedata.filter(date=selected_date)
+
+    return render(request, "Teacher/ViewAttendance.html", {
+        "semesterdata": semesterdata,
+        "attendancedata": attendancedata,
+        "selected_semester": selected_semester,
+        "selected_date": selected_date
+    })
+
+def updateattendance(request):
+
+    if request.method == "POST":
+
+        attendance_ids = request.POST.getlist("attendance_id")
+
+        for aid in attendance_ids:
+
+            status = request.POST.get(f"status_{aid}")
+
+            tbl_attendance.objects.filter(id=aid).update(status=status)
+
+    return redirect(request.META.get('HTTP_REFERER'))
+
 def viewleave(request):
 
     leavedata = tbl_leave.objects.filter(student__assignclass__teacher=request.session['tid'])
