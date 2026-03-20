@@ -1,24 +1,99 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Assigned Subjects</title>
-</head>
-<body>
-    <table border="1">
-        <tr>
-            <td>Sl No</td>
-            <td>Semester</td>
-            <td>Subject</td>
-        </tr>
-            {% for i in assignsubject %}
-        <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ i.subject.semester.semester_name }}</td>
-            <td>{{ i.subject.subject_name }}</td>
-        </tr>
-            {% endfor %}
-    </table>
-</body>
-</html>
+{% extends 'Teacher/Header.html' %}
+{% block content %}
+
+<style>
+
+.subject-wrapper{
+padding:40px;
+display:flex;
+justify-content:center;
+}
+
+.subject-card{
+width:70%;
+background:white;
+border-radius:14px;
+box-shadow:0 15px 35px rgba(0,0,0,0.15);
+padding:25px;
+animation:fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(20px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+.subject-title{
+text-align:center;
+font-size:24px;
+font-weight:600;
+margin-bottom:20px;
+color:#2c3e50;
+}
+
+.subject-table{
+width:100%;
+border-collapse:collapse;
+text-align:center;
+}
+
+.subject-table th{
+background:#3498db;
+color:white;
+padding:12px;
+font-weight:500;
+}
+
+.subject-table td{
+padding:12px;
+border-bottom:1px solid #ddd;
+}
+
+.subject-table tr:hover{
+background:#f5f7fa;
+}
+
+.slno{
+font-weight:600;
+color:#555;
+}
+
+</style>
+
+<div class="subject-wrapper">
+
+<div class="subject-card">
+
+<div class="subject-title">
+My Assigned Subjects
+</div>
+
+<table class="subject-table">
+
+<tr>
+<th>Sl No</th>
+<th>Semester</th>
+<th>Subject</th>
+</tr>
+
+{% for i in assignsubject %}
+
+<tr>
+
+<td class="slno">{{ forloop.counter }}</td>
+
+<td>{{ i.subject.semester.semester_name }}</td>
+
+<td>{{ i.subject.subject_name }}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+</div>
+
+{% endblock %}

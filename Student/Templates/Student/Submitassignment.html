@@ -1,49 +1,241 @@
 {% extends 'Student/Head.html' %}
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submitassignment</title>
-</head>
-<body>
-    <form action="" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <table border="1">
-            <tr>
-                <td>Assignment</td>
-                <td><input type="file" required name="file_submit" id="file_submit"></td>
-            </tr>
-            <tr>
-                
-                <td colspan="2" align="center"><input type="submit" value="Add"></td>
-            </tr>
-        </table>
-    </form>
-    <br>
-    <table border="1">
-        <tr>
-            <td>SlNo</td>
-            <td>Assignment</td>
-            <td>Action</td>
-        </tr>
-        {% for i in submitdata %}
-        <tr>
-            <td>{{ forloop.counter }}</td>
-            <td><a href="{{ i.ass_file.url }}">View File</a></td>
-            <td><a href="{% url 'Student:delassign' i.id aid %}">Delete</a></td>
-        </tr>
-        {% endfor %}
-    </table>
-</body>
-</html>
+
+<style>
+
+.assignment-wrapper{
+padding:40px;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:35px;
+}
+
+.upload-card{
+width:520px;
+background:white;
+border-radius:15px;
+box-shadow:0 15px 40px rgba(0,0,0,0.15);
+padding:25px;
+animation:fadeSlide 0.7s ease;
+}
+
+@keyframes fadeSlide{
+from{
+opacity:0;
+transform:translateY(25px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+.upload-header{
+background:linear-gradient(135deg,#4e73df,#224abe);
+color:white;
+text-align:center;
+padding:12px;
+border-radius:8px;
+font-size:20px;
+font-weight:600;
+margin-bottom:20px;
+}
+
+.file-upload{
+border:2px dashed #ccc;
+border-radius:10px;
+padding:20px;
+text-align:center;
+cursor:pointer;
+transition:0.3s;
+}
+
+.file-upload:hover{
+border-color:#4e73df;
+background:#f8f9ff;
+}
+
+.file-input{
+display:none;
+}
+
+.file-name{
+margin-top:10px;
+font-size:14px;
+color:#555;
+}
+
+.upload-btn{
+margin-top:15px;
+background:#1cc88a;
+color:white;
+border:none;
+padding:8px 22px;
+border-radius:25px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.upload-btn:hover{
+background:#17a673;
+transform:scale(1.05);
+}
+
+.assignment-table{
+width:80%;
+background:white;
+border-radius:12px;
+overflow:hidden;
+box-shadow:0 10px 30px rgba(0,0,0,0.12);
+}
+
+.assignment-table table{
+width:100%;
+border-collapse:collapse;
+text-align:center;
+}
+
+.assignment-table th{
+background:#4e73df;
+color:white;
+padding:12px;
+}
+
+.assignment-table td{
+padding:10px;
+border-bottom:1px solid #eee;
+}
+
+.assignment-table tr:hover{
+background:#f9f9ff;
+}
+
+.view-btn{
+background:#36b9cc;
+color:white;
+padding:5px 14px;
+border-radius:20px;
+text-decoration:none;
+font-size:13px;
+}
+
+.delete-btn{
+background:#e74a3b;
+color:white;
+padding:5px 14px;
+border-radius:20px;
+text-decoration:none;
+font-size:13px;
+}
+
+.status-badge{
+background:#1cc88a;
+color:white;
+padding:4px 10px;
+border-radius:15px;
+font-size:12px;
+}
+
+</style>
+
+<div class="assignment-wrapper">
+
+<div class="upload-card">
+
+<div class="upload-header">
+📤 Submit Assignment
+</div>
+
+<form action="" method="post" enctype="multipart/form-data">
+{% csrf_token %}
+
+<label class="file-upload">
+
+Click here to choose file
+
+<input type="file" name="file_submit" id="file_submit" class="file-input" required onchange="showFileName()">
+
+<div id="fileName" class="file-name">
+No file selected
+</div>
+
+</label>
+
+<div style="text-align:center;">
+<button type="submit" class="upload-btn">
+Upload Assignment
+</button>
+</div>
+
+</form>
+
+</div>
+
+<div class="assignment-table">
+
+<table>
+
+<tr>
+<th>SlNo</th>
+<th>Submitted File</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+
+{% for i in submitdata %}
+
+<tr>
+
+<td>{{ forloop.counter }}</td>
+
+<td>
+<a href="{{ i.ass_file.url }}" class="view-btn">
+View File
+</a>
+</td>
+
+<td>
+<span class="status-badge">
+Submitted
+</span>
+</td>
+
+<td>
+<a href="{% url 'Student:delassign' i.id aid %}" 
+class="delete-btn"
+onclick="return confirm('Delete this submission?')">
+Delete
+</a>
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+function showFileName(){
+var input=document.getElementById("file_submit");
+var fileName=input.files[0].name;
+document.getElementById("fileName").innerText=fileName;
+}
+
+</script>
 
 {% if msg %}
+
 <script>
-    alert("{{msg}}")
-    window.location = "{% url 'Student:Submitassignment' aid %}"
+alert("{{msg}}")
+window.location="{% url 'Student:Submitassignment' aid %}"
 </script>
+
 {% endif %}
 
 {% endblock %}

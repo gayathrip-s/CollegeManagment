@@ -1,76 +1,291 @@
 {% extends 'Student/Head.html' %}
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leave</title>
-</head>
-<body>
-   <form action="" method="post">
-    {% csrf_token %}
-    <table border="1">
-        <tr>
-            <td>Title</td>
-            <td><input type="text" name="txt_title" id="txt_title"></td>
-        </tr>
-        <tr>
-            <td>Reason</td>
-            <td><textarea name="txt_reason" id="txt_reason"></textarea></td>
-        </tr>
-        <tr>
-            <td>From Date</td>
-            <td><input type="date" name="txt_fromdate" id="txt_fromdate"></td>
-        </tr>
-        <tr>
-            <td>To Date</td>
-            <td><input type="date" name="txt_todate" id="txt_todate"></td>
-        </tr>
-        <tr>
-            
-            <td colspan="2" align="center"><input type="submit" value="Submit"></td>
-        </tr>
-    </table>
-   </form> 
-   <br>
-   <br>
-   <table border="1">
-    <tr>
-        <td>SlNo</td>
-        <td>Title</td>
-        <td>Reason</td>
-        <td>From Date</td>
-        <td>To Date</td>
-        <td>Action</td>
-    </tr>
-    {% for i in leavedata %}
-    <tr>
-        <td>{{ forloop.counter }}</td>
-        <td>{{ i.leave_title }}</td>
-        <td>{{ i.leave_reason}}</td>
-        <td>{{ i.leave_fromdate }}</td>
-        <td>{{ i.leave_todate }}</td>
-        <td>
-            {% if i.leave_status == 0 %}
-            <a href="{% url 'Student:delleave' i.id  %}">Delete</a>
-            {% elif i.leave_status == 1 %}
-            Accepted
-            {% else %}  
-            Rejected
-            {% endif %}
-        </td>
-    </tr>
-    {% endfor %}
-   </table>
-</body>
-</html>
+
+<style>
+
+.leave-wrapper{
+padding:40px 0;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:30px;
+}
+
+.leave-card{
+width:550px;
+background:#fff;
+border-radius:15px;
+box-shadow:0 15px 40px rgba(0,0,0,0.15);
+padding:25px;
+animation:leaveFade 0.7s ease;
+}
+
+@keyframes leaveFade{
+from{
+opacity:0;
+transform:translateY(25px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+.leave-header{
+background:linear-gradient(135deg,#36b9cc,#1cc88a);
+color:white;
+text-align:center;
+padding:10px;
+border-radius:8px;
+font-size:20px;
+font-weight:600;
+margin-bottom:20px;
+}
+
+.leave-table{
+width:100%;
+}
+
+.leave-table td{
+padding:10px;
+vertical-align:middle;
+}
+
+.leave-input{
+width:100%;
+padding:8px;
+border-radius:8px;
+border:1px solid #ccc;
+transition:0.3s;
+}
+
+.leave-input:focus{
+border-color:#1cc88a;
+box-shadow:0 0 6px rgba(28,200,138,0.4);
+outline:none;
+}
+
+.leave-btn{
+background:#1cc88a;
+color:white;
+border:none;
+padding:8px 20px;
+border-radius:25px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.leave-btn:hover{
+background:#17a673;
+transform:scale(1.05);
+}
+
+.leave-list{
+width:90%;
+background:white;
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,0.12);
+overflow:hidden;
+}
+
+.leave-list table{
+width:100%;
+border-collapse:collapse;
+text-align:center;
+}
+
+.leave-list th{
+background:#4e73df;
+color:white;
+padding:12px;
+text-align:center;
+}
+
+.leave-list td{
+padding:10px;
+border-bottom:1px solid #eee;
+text-align:center;
+vertical-align:middle;
+}
+
+.badge-pending{
+background:#ffc107;
+padding:4px 10px;
+border-radius:15px;
+font-size:13px;
+}
+
+.badge-accepted{
+background:#28a745;
+color:white;
+padding:4px 10px;
+border-radius:15px;
+font-size:13px;
+}
+
+.badge-rejected{
+background:#dc3545;
+color:white;
+padding:4px 10px;
+border-radius:15px;
+font-size:13px;
+}
+
+.delete-btn{
+background:#dc3545;
+color:white;
+padding:5px 12px;
+border-radius:20px;
+text-decoration:none;
+font-size:13px;
+}
+
+.delete-btn:hover{
+background:#c82333;
+}
+
+</style>
+
+<div class="leave-wrapper">
+
+<div class="leave-card">
+
+<div class="leave-header">
+<i class="fa fa-calendar-times"></i> Leave Application
+</div>
+
+<form action="" method="post" onsubmit="return validateDates()">
+{% csrf_token %}
+
+<table class="leave-table">
+
+<tr>
+<td>Title</td>
+<td>
+<input type="text" name="txt_title" id="txt_title" class="leave-input" required>
+</td>
+</tr>
+
+<tr>
+<td>Reason</td>
+<td>
+<textarea name="txt_reason" id="txt_reason" class="leave-input" rows="3" required></textarea>
+</td>
+</tr>
+
+<tr>
+<td>From Date</td>
+<td>
+<input type="date" name="txt_fromdate" id="txt_fromdate" class="leave-input" required>
+</td>
+</tr>
+
+<tr>
+<td>To Date</td>
+<td>
+<input type="date" name="txt_todate" id="txt_todate" class="leave-input" required>
+</td>
+</tr>
+
+<tr>
+<td colspan="2" align="center">
+<button type="submit" class="leave-btn">
+<i class="fa fa-paper-plane"></i> Submit
+</button>
+</td>
+</tr>
+
+</table>
+
+</form>
+
+</div>
+
+<div class="leave-list">
+
+<table>
+
+<tr>
+<th>SlNo</th>
+<th>Title</th>
+<th>Reason</th>
+<th>From Date</th>
+<th>To Date</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+
+{% for i in leavedata %}
+
+<tr>
+
+<td>{{ forloop.counter }}</td>
+<td>{{ i.leave_title }}</td>
+<td>{{ i.leave_reason }}</td>
+<td>{{ i.leave_fromdate }}</td>
+<td>{{ i.leave_todate }}</td>
+
+<td>
+
+{% if i.leave_status == 0 %} <span class="badge-pending">Pending</span>
+
+{% elif i.leave_status == 1 %} <span class="badge-accepted">Accepted</span>
+
+{% else %} <span class="badge-rejected">Rejected</span>
+{% endif %}
+
+</td>
+
+<td>
+
+{% if i.leave_status == 0 %} <a href="{% url 'Student:delleave' i.id %}" class="delete-btn">Delete</a>
+
+{% elif i.leave_status == 1 %} <span class="badge-accepted">Accepted</span>
+
+{% else %} <span class="badge-rejected">Rejected</span>
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+function validateDates(){
+
+var fromDate=document.getElementById("txt_fromdate").value;
+var toDate=document.getElementById("txt_todate").value;
+
+if(fromDate=="" || toDate==""){
+return true;
+}
+
+if(toDate < fromDate){
+alert("To Date must be greater than From Date");
+return false;
+}
+
+return true;
+
+}
+
+</script>
 
 {% if msg %}
+
 <script>
-    alert("{{msg}}")
-    window.location = "{% url 'Student:leaveapplication' %}"
+alert("{{msg}}")
+window.location="{% url 'Student:leaveapplication' %}"
 </script>
+
 {% endif %}
 
 {% endblock %}

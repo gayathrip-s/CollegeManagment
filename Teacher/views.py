@@ -6,7 +6,30 @@ from django.utils import timezone
 
 # Create your views here.
 def Homepage(request):
-    return render(request,"Teacher/Homepage.html")
+    sc=tbl_student.objects.filter(assignclass__teacher=request.session['tid']).count()
+    ac=tbl_assignment.objects.filter(teacher=request.session['tid']).count()
+    lc=tbl_leave.objects.filter(student__assignclass__teacher=request.session['tid'],leave_status=0).count()
+    asup=tbl_assignmentbody.objects.filter(assignment__teacher=request.session['tid']).count()
+    std=tbl_student.objects.filter(assignclass__teacher=request.session['tid'])
+    data = []
+
+    for i in std:
+        total = tbl_attendance.objects.filter(student=i).count()
+        present = tbl_attendance.objects.filter(student=i, status=1).count()
+
+        if total > 0:
+            percentage = (present / total) * 100
+        else:
+            percentage = 0
+
+        data.append({
+            'student': i,
+            'percentage': round(percentage, 2)
+        })
+    teacher = tbl_teacher.objects.get(id=request.session['tid'])
+    assign=tbl_assignment.objects.filter(teacher=teacher).order_by('-id')[:5]
+    return render(request,"Teacher/Homepage.html",{'student_count':sc,'assignment_count':ac,'leave_count':lc,'assignment_submission_count':asup,'data':data,'teacher':teacher,'assign':assign})
+
 
 def Myprofile(request):
   teacherdata = tbl_teacher.objects.get(id=request.session['tid'])
@@ -337,6 +360,10 @@ def viewattendance(request, sid):
         "selected_semester": selected_semester,
         "selected_date": selected_date
     })
+
+def Logout(request):
+    del request.session['tid']
+    return redirect('Guest:Login')
 
 def updateattendance(request):
 

@@ -1,54 +1,208 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'Teacher/Header.html' %}
+{% block content %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Leave</title>
-</head>
+<style>
 
-<body>
-    <table border="1">
-        <tr>
-            <td>SlNo</td>
-            <td>Student Name</td>
-            <td>Student Reg No</td>
-            <td>Photo</td>
-            <td>Title</td>
-            <td>Reason</td>
-            <td>From Date</td>
-            <td>To Date</td>
-            <td>Action</td>
-        </tr>
-        {% for i in leavedata %}
-        <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ i.student.student_name }}</td>
-            <td>{{ i.student.student_registernumber }}</td>
-            <td align="center"><img src="{{i.student.student_photo.url}}" alt="" width="150"></td>
-            <td>{{ i.leave_title }}</td>
-            <td>{{ i.leave_reason }}</td>
-            <td>{{ i.leave_fromdate }}</td>
-            <td>{{ i.leave_todate }}</td>
-            <td>
-                {% if i.leave_status == 0 %}
-                <a href="{% url 'Teacher:accept' i.id  %}">Accept</a>
-                <a href="{% url 'Teacher:reject' i.id  %}">Reject</a>
-                {% elif i.leave_status == 1 %}
-                Accepted
-                {% else %}
-                Rejected
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-</body>
+.leave-wrapper{
+display:flex;
+justify-content:center;
+padding:40px;
+}
 
-</html>
-{% if msg %}
-<script>
-    alert("{{msg}}")
-    window.location = "{% url 'Teacher:viewleave' %}"
-</script>
+.leave-card{
+width:95%;
+max-width:1100px;
+background:white;
+border-radius:14px;
+box-shadow:0 15px 35px rgba(0,0,0,0.15);
+padding:25px;
+animation:fadeUp 0.5s ease;
+}
+
+@keyframes fadeUp{
+from{opacity:0;transform:translateY(20px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+.leave-title{
+font-size:24px;
+font-weight:600;
+text-align:center;
+margin-bottom:20px;
+color:#2c3e50;
+}
+
+/* TABLE */
+
+.leave-table{
+width:100%;
+border-collapse:collapse;
+text-align:center;
+}
+
+.leave-table th{
+background:#f4f6f9;
+padding:12px;
+font-weight:600;
+}
+
+.leave-table td{
+padding:10px;
+border-bottom:1px solid #ddd;
+}
+
+.leave-table tr:hover{
+background:#fafafa;
+}
+
+/* PHOTO */
+
+.student-photo{
+width:70px;
+height:70px;
+border-radius:50%;
+object-fit:cover;
+border:2px solid #ddd;
+}
+
+/* BUTTONS */
+
+.action-btn{
+padding:6px 12px;
+border-radius:5px;
+text-decoration:none;
+color:white;
+font-size:13px;
+margin:2px;
+display:inline-block;
+}
+
+.accept-btn{
+background:#27ae60;
+}
+
+.reject-btn{
+background:#e74c3c;
+}
+
+.accept-btn:hover{
+background:#1e8c4c;
+}
+
+.reject-btn:hover{
+background:#c0392b;
+}
+
+/* STATUS BADGES */
+
+.badge{
+padding:5px 10px;
+border-radius:5px;
+font-size:13px;
+font-weight:500;
+}
+
+.badge-accept{
+background:#d4edda;
+color:#27ae60;
+}
+
+.badge-reject{
+background:#f8d7da;
+color:#e74c3c;
+}
+
+</style>
+
+<div class="leave-wrapper">
+
+<div class="leave-card">
+
+<div class="leave-title">
+Student Leave Requests
+</div>
+
+<table class="leave-table">
+
+<tr>
+<th>SlNo</th>
+<th>Student Name</th>
+<th>Reg No</th>
+<th>Photo</th>
+<th>Title</th>
+<th>Reason</th>
+<th>From Date</th>
+<th>To Date</th>
+<th>Action</th>
+</tr>
+
+{% for i in leavedata %}
+
+<tr>
+
+<td>{{ forloop.counter }}</td>
+
+<td>{{ i.student.student_name }}</td>
+
+<td>{{ i.student.student_registernumber }}</td>
+
+<td>
+<img src="{{i.student.student_photo.url}}" class="student-photo">
+</td>
+
+<td>{{ i.leave_title }}</td>
+
+<td>{{ i.leave_reason }}</td>
+
+<td>{{ i.leave_fromdate }}</td>
+
+<td>{{ i.leave_todate }}</td>
+
+<td>
+
+{% if i.leave_status == 0 %}
+
+<a href="{% url 'Teacher:accept' i.id %}" class="action-btn accept-btn">
+Accept
+</a>
+
+<a href="{% url 'Teacher:reject' i.id %}" class="action-btn reject-btn">
+Reject
+</a>
+
+{% elif i.leave_status == 1 %}
+
+<span class="badge badge-accept">
+Accepted
+</span>
+
+{% else %}
+
+<span class="badge badge-reject">
+Rejected
+</span>
+
 {% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+</div>
+
+{% if msg %}
+
+<script>
+alert("{{msg}}")
+window.location="{% url 'Teacher:viewleave' %}"
+</script>
+
+{% endif %}
+
+{% endblock %}

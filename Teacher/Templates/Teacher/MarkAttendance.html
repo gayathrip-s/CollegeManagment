@@ -1,134 +1,286 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mark Attendance</title>
-</head>
-<body>
-    <h2>Mark Attendance</h2>
+{% extends 'Teacher/Header.html' %}
+{% block content %}
+
+<style>
+
+.attendance-wrapper{
+padding:40px;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:30px;
+}
+
+/* CARD */
+
+.attendance-card{
+width:90%;
+max-width:900px;
+background:white;
+border-radius:14px;
+box-shadow:0 15px 35px rgba(0,0,0,0.15);
+padding:25px;
+}
+
+.attendance-title{
+font-size:24px;
+font-weight:600;
+margin-bottom:20px;
+color:#2c3e50;
+text-align:center;
+}
+
+/* FILTER FORM */
+
+.filter-form{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+gap:15px;
+margin-bottom:10px;
+}
+
+.filter-form select{
+padding:8px;
+border-radius:6px;
+border:1px solid #ccc;
+transition:0.3s;
+}
+
+.filter-form select:focus{
+outline:none;
+border-color:#3498db;
+box-shadow:0 0 6px rgba(52,152,219,0.4);
+}
+
+.load-btn{
+grid-column:span 2;
+background:linear-gradient(135deg,#3498db,#5dade2);
+color:white;
+border:none;
+padding:9px;
+border-radius:6px;
+cursor:pointer;
+font-weight:500;
+}
+
+.load-btn:hover{
+transform:scale(1.03);
+}
+
+/* TABLE */
+
+.attendance-table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+.attendance-table th{
+background:#f4f6f9;
+padding:12px;
+}
+
+.attendance-table td{
+padding:10px;
+border-bottom:1px solid #ddd;
+}
+
+.attendance-table tr:hover{
+background:#fafafa;
+}
+
+.present{
+color:#27ae60;
+font-weight:600;
+}
+
+.absent{
+color:#e74c3c;
+font-weight:600;
+}
+
+/* SAVE BUTTON */
+
+.save-btn{
+margin-top:15px;
+background:#27ae60;
+color:white;
+border:none;
+padding:10px 20px;
+border-radius:6px;
+cursor:pointer;
+font-weight:500;
+}
+
+.save-btn:hover{
+transform:scale(1.05);
+box-shadow:0 6px 15px rgba(0,0,0,0.2);
+}
+
+</style>
+
+<div class="attendance-wrapper">
+
+<div class="attendance-card">
+
+<div class="attendance-title">
+Mark Attendance
+</div>
 
 <form method="get">
-    {% csrf_token %}
-    Department:
-    <select  required name="department" id="sel_department">
-        <option value="">Select</option>
-        {% for d in departments %}
-        <option value="{{ d.id }}" {% if d.id|stringformat:"s" == selected_department %}selected{% endif %}>
-            {{ d.department_name }}
-        </option>
-        {% endfor %}
-    </select>
 
-    Course:
-    <select required  name="course" id="sel_course">
-        <option value="">Select</option>
-        {% for c in courses %}
-        <option value="{{ c.id }}" {% if c.id|stringformat:"s" == selected_course %}selected{% endif %}>
-            {{ c.course_name }}
-        </option>
-        {% endfor %}
-    </select>
+{% csrf_token %}
 
-    Semester:
-    <select required  name="semester">
-        <option value="">Select</option>
-        {% for s in semesters %}
-        <option value="{{ s.id }}" {% if s.id|stringformat:"s" == selected_semester %}selected{% endif %}>
-            {{ s.semester_name }}
-        </option>
-        {% endfor %}
-    </select>
+<div class="filter-form">
 
-    Day:
-    <select required name="day">
-        {% for d in days %}
-        <option value="{{ d }}" {% if d == selected_day %}selected{% endif %}>{{ d }}</option>
-        {% endfor %}
-    </select>
+<select required name="department" id="sel_department">
+<option value="">Department</option>
+{% for d in departments %}
+<option value="{{ d.id }}" {% if d.id|stringformat:"s" == selected_department %}selected{% endif %}>
+{{ d.department_name }}
+</option>
+{% endfor %}
+</select>
 
-    Hour:
-    <select  required name="hour">
-        {% for h in hours %}
-        <option value="{{ h.0 }}" {% if h.0 == selected_hour %}selected{% endif %}>
-            {{ h.1 }}
-        </option>
-        {% endfor %}
-    </select>
+<select required name="course" id="sel_course">
+<option value="">Course</option>
+{% for c in courses %}
+<option value="{{ c.id }}" {% if c.id|stringformat:"s" == selected_course %}selected{% endif %}>
+{{ c.course_name }}
+</option>
+{% endfor %}
+</select>
 
-    <button type="submit">Load Students</button>
+<select required name="semester">
+<option value="">Semester</option>
+{% for s in semesters %}
+<option value="{{ s.id }}" {% if s.id|stringformat:"s" == selected_semester %}selected{% endif %}>
+{{ s.semester_name }}
+</option>
+{% endfor %}
+</select>
+
+<select required name="day">
+{% for d in days %}
+<option value="{{ d }}" {% if d == selected_day %}selected{% endif %}>
+{{ d }}
+</option>
+{% endfor %}
+</select>
+
+<select required name="hour">
+{% for h in hours %}
+<option value="{{ h.0 }}" {% if h.0 == selected_hour %}selected{% endif %}>
+{{ h.1 }}
+</option>
+{% endfor %}
+</select>
+
+<button type="submit" class="load-btn">Load Students</button>
+
+</div>
+
 </form>
 
-<hr>
+</div>
 
 {% if selected_students %}
-<form method="post" action="{% url 'Teacher:save_attendance_selection' %}">
-    {% csrf_token %}
+
+<div class="attendance-card">
+
 <h3>
-    Subject: {{ selected_students.0.subject.subject_name }}
+Subject: {{ selected_students.0.subject.subject_name }}
 </h3>
 
-    <table border="1" cellpadding="10">
-        <tr>
-            <th>Student</th>
-            <th>Present</th>
-            <th>Absent</th>
-        </tr>
+<form method="post" action="{% url 'Teacher:save_attendance_selection' %}">
 
-        {% for s in selected_students %}
-        <tr>
-            <td>{{ s.student.student_name }}</td>
+{% csrf_token %}
 
-            <!-- PRESENT -->
-            <td align="center">
-                <input type="checkbox"  name="attendance_{{ s.student.id }}" value="1" {% if s.attendance == 1 %}checked{% endif %} onclick="toggleAttendance(this)">
-            </td>
+<table class="attendance-table">
 
-            <!-- ABSENT -->
-            <td align="center">
-                <input type="checkbox" name="attendance_{{ s.student.id }}" value="0" {% if s.attendance == 0 %}checked{% endif %} onclick="toggleAttendance(this)">
-            </td>
+<tr>
+<th>Student</th>
+<th class="present">Present</th>
+<th class="absent">Absent</th>
+</tr>
 
-           
-        </tr>
-        {% endfor %}
+{% for s in selected_students %}
 
-    </table>
+<tr>
 
-    <input type="hidden" name="hour" value="{{ selected_hour }}">
-    <input type="hidden" name="day" value="{{ selected_day }}">
-    <input type="hidden" name="course" value="{{ selected_course }}">
-    <input type="hidden" name="semester" value="{{ selected_semester }}">
+<td>{{ s.student.student_name }}</td>
 
-    <br>
-    <button type="submit">Save Attendance</button>
+<td align="center">
+<input type="checkbox"
+name="attendance_{{ s.student.id }}"
+value="1"
+{% if s.attendance == 1 %}checked{% endif %}
+onclick="toggleAttendance(this)">
+</td>
+
+<td align="center">
+<input type="checkbox"
+name="attendance_{{ s.student.id }}"
+value="0"
+{% if s.attendance == 0 %}checked{% endif %}
+onclick="toggleAttendance(this)">
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+<input type="hidden" name="hour" value="{{ selected_hour }}">
+<input type="hidden" name="day" value="{{ selected_day }}">
+<input type="hidden" name="course" value="{{ selected_course }}">
+<input type="hidden" name="semester" value="{{ selected_semester }}">
+
+<button type="submit" class="save-btn">Save Attendance</button>
 
 </form>
+
+</div>
+
 {% endif %}
+
+</div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
-    /* Allow only ONE checkbox per student */
-    function toggleAttendance(cb) {
-        let row = cb.closest("tr");
-        let boxes = row.querySelectorAll("input[type='checkbox']");
-        boxes.forEach(b => {
-            if (b !== cb) b.checked = false;
-        });
-    }
 
-    /* Department → Course AJAX */
-    $("#sel_department").change(function () {
-        $.ajax({
-            url: "{% url 'Admin:Ajaxcourse' %}",
-            data: { disid: $(this).val() },
-            success: function (data) {
-                $("#sel_course").html(data);
-            }
-        });
-    });
+function toggleAttendance(cb){
+
+let row=cb.closest("tr");
+let boxes=row.querySelectorAll("input[type='checkbox']");
+
+boxes.forEach(b=>{
+if(b!==cb)b.checked=false;
+});
+
+}
+
+
+$("#sel_department").change(function(){
+
+$.ajax({
+
+url:"{% url 'Admin:Ajaxcourse' %}",
+
+data:{disid:$(this).val()},
+
+success:function(data){
+
+$("#sel_course").html(data);
+
+}
+
+});
+
+});
+
 </script>
-    
-</body>
-</html>
+
+{% endblock %}

@@ -31,5 +31,5 @@ urlpatterns = [
    path('myassignedsubject/',views.myassignedsubject,name="myassignedsubject"),
  
    path('updateattendance/',views.updateattendance,name="updateattendance"),
-   
+   path('Logout/',views.Logout,name="Logout")
 ]

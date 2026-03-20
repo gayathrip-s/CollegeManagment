@@ -1,92 +1,324 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Addstudent</title>
-</head>
-<body>
-   <form action="" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <table border="1">
-        <tr>
-            <td>Name</td>
-            <td><input type="text" name="txt_name" id="txt_name" title="Name Allows Only Alphabets,Spaces and First Letter Must Be Capital Letter" pattern="^[A-Z]+[a-zA-Z ]*$"/></td>
-        </tr>
-        <tr>
-            <td>Register Number</td>
-            <td><input type="text" name="txt_number" id="txt_number" /></td>
-        </tr>
-        <tr>
-            <td>Email</td>
-            <td><input type="email" required name="txt_email" id="txt_email"></td>
-        </tr>
-        <tr>
-            <td>Contact</td>
-            <td><input type="text"required name="txt_contact" id="txt_contact"  pattern="[6-9]{1}[0-9]{9}" 
-                title="Phone number with 7-9 and remaing 9 digit with 0-9"/></td>
-        </tr>
-        <tr>
-            <td>Address</td>
-            <td><textarea name="txt_address"required id="txt_address"></textarea></td>
-        </tr>
-        </tr>
-            <td>Photo</td>
-            <td><input type="file" name="file_photo" id="file_photo" required accept="images/*"></td>
-        </tr>
-        <tr>
-            <td>Gender</td>
-            <td><input type="radio" required name="txt_gender" id="txt_gender" value="Male">Male
-                <input type="radio"required name="txt_gender" id="txt_gender" value="Female">Female</td>
-        </tr>
-        <tr>
-            <td>DOB</td>
-            <td><input type="date"required name="txt_date" id="txt_date"></td>
-        </tr>
-        <tr>
-            <td>Password</td>
-            <td><input type="password"required name="txt_password" id="txt_password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required name="txt_pass" /></td>
-        </tr>
-          
-        <tr>
-            
-            <td colspan="2" align="center"><input type="submit" value="submit">
-            <input type="submit" value="Cancel"></td>
-        </tr>
-    </table>
-   </form> 
-   <br>
-   <table border="1">
-    <tr>
-        <td>SlNo</td>
-        <td>Name</td>
-        <td>Email</td>
-        <td>Contact</td>
-        <td>Address</td>
-        <td>Gender</td>
-        <td>DOB</td>
-        <td>Photo</td>
-        <td>Action</td>
-    </tr>
-        {% for i in studentdata %}
-    <tr>
-        <td>{{ forloop.counter }}</td>
-        <td>{{i.student_name}}</td>
-        <td>{{i.student_email}}</td>
-        <td>{{i.student_contact}}</td>
-        <td>{{i.student_address}}</td>
-        <td>{{i.student_gender}}</td>
-        <td>{{i.student_dob}}</td>
-        <td align="center"><img src="{{i.student_photo.url}}" alt="" width="150"></td>
-        <td><a href="{% url 'Teacher:delstudent' i.id %}">Delete</a></td>
-    </tr>
-    {% endfor %}
-   </table>
-</body>
-</html>
+{% extends 'Teacher/Header.html' %}
+{% block content %}
+
+<style>
+
+.student-wrapper{
+display:flex;
+flex-direction:column;
+align-items:center;
+padding:40px;
+gap:30px;
+}
+
+.student-form-card{
+width:650px;
+background:white;
+border-radius:12px;
+box-shadow:0 12px 30px rgba(0,0,0,0.15);
+padding:25px;
+animation:fadeUp 0.5s ease;
+}
+
+@keyframes fadeUp{
+from{
+opacity:0;
+transform:translateY(20px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+.student-title{
+text-align:center;
+font-size:24px;
+font-weight:600;
+margin-bottom:20px;
+color:#2c3e50;
+}
+
+.student-form-table{
+width:100%;
+border-collapse:collapse;
+}
+
+.student-form-table td{
+padding:10px;
+}
+
+.student-input,
+.student-textarea{
+width:100%;
+padding:8px;
+border-radius:6px;
+border:1px solid #ccc;
+transition:0.3s;
+}
+
+.student-input:focus,
+.student-textarea:focus{
+outline:none;
+border-color:#3498db;
+box-shadow:0 0 5px rgba(52,152,219,0.4);
+}
+
+.student-textarea{
+resize:none;
+height:70px;
+}
+
+.gender-box{
+display:flex;
+gap:15px;
+align-items:center;
+}
+
+.student-submit-row{
+text-align:center;
+}
+
+.student-btn{
+background:#3498db;
+color:white;
+border:none;
+padding:9px 18px;
+border-radius:6px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.student-btn:hover{
+background:#2c80b4;
+transform:scale(1.05);
+}
+
+.student-cancel-btn{
+background:#e74c3c;
+color:white;
+border:none;
+padding:9px 18px;
+border-radius:6px;
+cursor:pointer;
+margin-left:10px;
+}
+
+.student-table-card{
+width:95%;
+background:white;
+border-radius:12px;
+box-shadow:0 10px 25px rgba(0,0,0,0.15);
+padding:20px;
+}
+
+.student-table{
+width:100%;
+border-collapse:collapse;
+text-align:center;
+}
+
+.student-table th{
+background:#f4f6f9;
+padding:12px;
+}
+
+.student-table td{
+padding:10px;
+border-bottom:1px solid #ddd;
+}
+
+.student-table tr:hover{
+background:#fafafa;
+}
+
+.student-photo{
+width:70px;
+height:70px;
+border-radius:50%;
+object-fit:cover;
+border:3px solid #eee;
+}
+
+.delete-student-btn{
+background:#e74c3c;
+color:white;
+padding:6px 12px;
+border-radius:5px;
+text-decoration:none;
+font-size:13px;
+}
+
+.delete-student-btn:hover{
+background:#c0392b;
+}
+
+</style>
+
+<div class="student-wrapper">
+
+<div class="student-form-card">
+
+<div class="student-title">
+Add Student
+</div>
+
+<form action="" method="post" enctype="multipart/form-data">
+
+{% csrf_token %}
+
+<table class="student-form-table">
+
+<tr>
+<td>Name</td>
+<td>
+<input type="text" name="txt_name" id="txt_name"
+class="student-input"
+title="Name Allows Only Alphabets,Spaces and First Letter Must Be Capital Letter"
+pattern="^[A-Z]+[a-zA-Z ]*$"/>
+</td>
+</tr>
+
+<tr>
+<td>Register Number</td>
+<td>
+<input type="text" name="txt_number" id="txt_number" class="student-input"/>
+</td>
+</tr>
+
+<tr>
+<td>Email</td>
+<td>
+<input type="email" required name="txt_email" id="txt_email" class="student-input">
+</td>
+</tr>
+
+<tr>
+<td>Contact</td>
+<td>
+<input type="text" required name="txt_contact" id="txt_contact"
+pattern="[6-9]{1}[0-9]{9}"
+title="Phone number with 7-9 and remaing 9 digit with 0-9"
+class="student-input"/>
+</td>
+</tr>
+
+<tr>
+<td>Address</td>
+<td>
+<textarea name="txt_address" required id="txt_address" class="student-textarea"></textarea>
+</td>
+</tr>
+
+<tr>
+<td>Photo</td>
+<td>
+<input type="file" name="file_photo" id="file_photo" required accept="images/*" class="student-input">
+</td>
+</tr>
+
+<tr>
+<td>Gender</td>
+<td class="gender-box">
+<input type="radio" required name="txt_gender" value="Male"> Male
+<input type="radio" required name="txt_gender" value="Female"> Female
+</td>
+</tr>
+
+<tr>
+<td>DOB</td>
+<td>
+<input type="date" required name="txt_date" id="txt_date" class="student-input">
+</td>
+</tr>
+
+<tr>
+<td>Password</td>
+<td>
+<input type="password"
+required
+name="txt_password"
+id="txt_password"
+class="student-input"
+pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters">
+</td>
+</tr>
+
+<tr>
+<td colspan="2" class="student-submit-row">
+<input type="submit" value="Submit" class="student-btn">
+<input type="submit" value="Cancel" class="student-cancel-btn">
+</td>
+</tr>
+
+</table>
+
+</form>
+
+</div>
+
+<div class="student-table-card">
+
+<table class="student-table">
+
+<tr>
+<th>SlNo</th>
+<th>Name</th>
+<th>Email</th>
+<th>Contact</th>
+<th>Address</th>
+<th>Gender</th>
+<th>DOB</th>
+<th>Photo</th>
+<th>Action</th>
+</tr>
+
+{% for i in studentdata %}
+
+<tr>
+
+<td>{{ forloop.counter }}</td>
+
+<td>{{i.student_name}}</td>
+
+<td>{{i.student_email}}</td>
+
+<td>{{i.student_contact}}</td>
+
+<td>{{i.student_address}}</td>
+
+<td>{{i.student_gender}}</td>
+
+<td>{{i.student_dob}}</td>
+
+<td>
+<img src="{{i.student_photo.url}}" class="student-photo">
+</td>
+
+<td>
+<a href="{% url 'Teacher:delstudent' i.id %}" class="delete-student-btn">
+Delete
+</a>
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+</div>
+
 {% if msg %}
+
 <script>
-    alert("{{msg}}")
-    window.location = "{% url 'Teacher:Addstudent' %}"
+alert("{{msg}}")
+window.location="{% url 'Teacher:Addstudent' %}"
 </script>
+
 {% endif %}
+
+{% endblock %}

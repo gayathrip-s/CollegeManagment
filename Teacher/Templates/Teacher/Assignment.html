@@ -1,103 +1,352 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assignment</title>
-</head>
-<body>
-    <form action="" method="post"  enctype="multipart/form-data">
-        {% csrf_token %}
-        <table border="1">
-            <tr>
-                <td>Course</td>
-                <td><select name="sel_course" id="sel_course">
-                        <option value="">---select---</option>
-                        {% for i in coursedata %}
-                        <option value="{{i.id}}">{{i.course_name}}</option>
-                        {% endfor %}
-                    </select></td>
-            </tr>
-            <tr>
-                <td>Semester</td>
-                <td><select name="sel_semester" id="sel_semester">
-                        <option value="">---select---</option>
-                        {% for i in semesterdata %}
-                        <option value="{{i.id}}">{{i.semester_name}}</option>
-                        {% endfor %}
-                    </select></td>
-            </tr>
-            <tr>
-                <td>Subject</td>
-                <td><select name="sel_subject" id="sel_subject">
-                        <option value="">---select---</option></td>
-            </tr>
-            <tr>
-                <td>Title</td>
-                <td><input type="text" name="txt_title" id="txt_title"></td>
-            </tr>
-            <tr>
-                <td>File</td>
-                <td><input type="file" name="file_assignment" id="file_assignment"></td>
-            </tr>
-            <tr>
-                <td>Due Date</td>
-                <td><input type="date" name="txt_date" id="txt_date"></td>
-            </tr>
-            <tr>
-                
-                <td colspan="2" align="center"><input type="submit" value="submit"></td>
-            </tr>
-        </table>
-    </form>
-    <br>
-    <table border="1">
-        <tr>
-            <td>SlNo</td>
-            <td>Course</td>
-            <td>Semester</td>
-            <td>Subject</td>
-            <td>Title</td>
-            <td>File</td>
-            <td>Due Date</td>
-            <td>Action</td>
-        </tr>
-            {% for i in assignmentdata %}
-        <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ i.subject.course.course_name }}</td>
-            <td>{{ i.subject.semester.semester_name }}</td>
-            <td>{{ i.subject.subject_name }}</td>
-            <td>{{ i.assignment_title }}</td>
-            <td><a href="{{ i.assignment_file.url }}">View File</a></td>
-            <td>{{ i.assignment_duedate }}</td>
-            <td><a href="{% url 'Teacher:delassignment' i.id %}">Delete</a>
-            <a href="{% url 'Teacher:Viewuploads' i.id %}">View Uploads</a></td>
-        </tr>
-            {% endfor %}
-    </table>
-</body>
-</html>
+{% extends 'Teacher/Header.html' %}
+{% block content %}
+
+<style>
+
+.assignment-container{
+display:flex;
+flex-direction:column;
+align-items:center;
+padding:40px;
+gap:35px;
+}
+
+/* FORM CARD */
+
+.assignment-card{
+width:600px;
+background:white;
+border-radius:14px;
+box-shadow:0 15px 35px rgba(0,0,0,0.15);
+padding:30px;
+animation:fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn{
+from{
+opacity:0;
+transform:translateY(20px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+.assignment-title{
+text-align:center;
+font-size:26px;
+font-weight:600;
+margin-bottom:20px;
+color:#2c3e50;
+}
+
+/* FORM TABLE */
+
+.assignment-form-table{
+width:100%;
+border-collapse:collapse;
+}
+
+.assignment-form-table td{
+padding:10px;
+}
+
+/* INPUTS */
+
+.assignment-input,
+.assignment-select{
+width:100%;
+padding:9px;
+border-radius:6px;
+border:1px solid #ccc;
+transition:0.3s;
+}
+
+.assignment-input:focus,
+.assignment-select:focus{
+outline:none;
+border-color:#3498db;
+box-shadow:0 0 6px rgba(52,152,219,0.4);
+}
+
+/* SUBMIT BUTTON */
+
+.assignment-submit-row{
+text-align:center;
+padding-top:10px;
+}
+
+.assignment-submit-btn{
+background:linear-gradient(135deg,#3498db,#5dade2);
+color:white;
+border:none;
+padding:10px 24px;
+border-radius:6px;
+cursor:pointer;
+font-weight:500;
+transition:0.3s;
+}
+
+.assignment-submit-btn:hover{
+transform:scale(1.05);
+box-shadow:0 6px 15px rgba(0,0,0,0.2);
+}
+
+/* TABLE CARD */
+
+.assignment-table-card{
+width:95%;
+background:white;
+border-radius:14px;
+box-shadow:0 12px 28px rgba(0,0,0,0.15);
+padding:20px;
+}
+
+/* TABLE */
+
+.assignment-table{
+width:100%;
+border-collapse:collapse;
+text-align:center;
+}
+
+.assignment-table th{
+background:#f4f6f9;
+padding:12px;
+font-weight:600;
+}
+
+.assignment-table td{
+padding:10px;
+border-bottom:1px solid #ddd;
+}
+
+.assignment-table tr:hover{
+background:#fafafa;
+}
+
+/* BUTTONS */
+
+.view-file-btn{
+background:#1abc9c;
+color:white;
+padding:6px 12px;
+border-radius:5px;
+text-decoration:none;
+font-size:13px;
+}
+
+.view-file-btn:hover{
+background:#16a085;
+}
+
+.delete-btn{
+background:#e74c3c;
+color:white;
+padding:6px 12px;
+border-radius:5px;
+text-decoration:none;
+font-size:13px;
+margin-right:5px;
+}
+
+.delete-btn:hover{
+background:#c0392b;
+}
+
+.upload-btn{
+background:#9b59b6;
+color:white;
+padding:6px 12px;
+border-radius:5px;
+text-decoration:none;
+font-size:13px;
+}
+
+.upload-btn:hover{
+background:#8e44ad;
+}
+
+</style>
+
+<div class="assignment-container">
+
+<div class="assignment-card">
+
+<div class="assignment-title">
+Add Assignment
+</div>
+
+<form action="" method="post" enctype="multipart/form-data">
+
+{% csrf_token %}
+
+<table class="assignment-form-table">
+
+<tr>
+<td>Course</td>
+<td>
+<select name="sel_course" id="sel_course" class="assignment-select">
+<option value="">---select---</option>
+
+{% for i in coursedata %}
+
+<option value="{{i.id}}">{{i.course_name}}</option>
+{% endfor %}
+
+</select>
+</td>
+</tr>
+
+<tr>
+<td>Semester</td>
+<td>
+<select name="sel_semester" id="sel_semester" class="assignment-select">
+<option value="">---select---</option>
+
+{% for i in semesterdata %}
+
+<option value="{{i.id}}">{{i.semester_name}}</option>
+{% endfor %}
+
+</select>
+</td>
+</tr>
+
+<tr>
+<td>Subject</td>
+<td>
+<select name="sel_subject" id="sel_subject" class="assignment-select">
+<option value="">---select---</option>
+</select>
+</td>
+</tr>
+
+<tr>
+<td>Title</td>
+<td>
+<input type="text" name="txt_title" id="txt_title" class="assignment-input">
+</td>
+</tr>
+
+<tr>
+<td>File</td>
+<td>
+<input type="file" name="file_assignment" id="file_assignment" class="assignment-input">
+</td>
+</tr>
+
+<tr>
+<td>Due Date</td>
+<td>
+<input type="date" name="txt_date" id="txt_date" class="assignment-input">
+</td>
+</tr>
+
+<tr>
+<td colspan="2" class="assignment-submit-row">
+<input type="submit" value="Submit" class="assignment-submit-btn">
+</td>
+</tr>
+
+</table>
+
+</form>
+
+</div>
+
+<div class="assignment-table-card">
+
+<table class="assignment-table">
+
+<tr>
+<th>SlNo</th>
+<th>Course</th>
+<th>Semester</th>
+<th>Subject</th>
+<th>Title</th>
+<th>File</th>
+<th>Due Date</th>
+<th>Action</th>
+</tr>
+
+{% for i in assignmentdata %}
+
+<tr>
+
+<td>{{ forloop.counter }}</td>
+
+<td>{{ i.subject.course.course_name }}</td>
+
+<td>{{ i.subject.semester.semester_name }}</td>
+
+<td>{{ i.subject.subject_name }}</td>
+
+<td>{{ i.assignment_title }}</td>
+
+<td>
+<a href="{{ i.assignment_file.url }}" class="view-file-btn">
+View File
+</a>
+</td>
+
+<td>{{ i.assignment_duedate }}</td>
+
+<td>
+
+<a href="{% url 'Teacher:delassignment' i.id %}" class="delete-btn">
+Delete
+</a>
+
+<a href="{% url 'Teacher:Viewuploads' i.id %}" class="upload-btn">
+View Uploads
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+</div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
 <script>
-    $("#sel_semester").change(function () {
-        var semId = $(this).val();
-        var courseId = document.getElementById("sel_course").value;
-        var ur = "{% url 'Teacher:Ajaxassignsubject' %}";
-        $.ajax({
-            url: ur,
-            data: { semId: semId, courseId: courseId },
-            success: function (data) {
-                $("#sel_subject").html(data);
-            },
-        });
-    });
+
+$("#sel_semester").change(function(){
+
+var semId=$(this).val();
+var courseId=document.getElementById("sel_course").value;
+
+var ur="{% url 'Teacher:Ajaxassignsubject' %}";
+
+$.ajax({
+url:ur,
+data:{semId:semId,courseId:courseId},
+success:function(data){
+
+$("#sel_subject").html(data);
+
+},
+});
+
+});
+
 </script>
 
 {% if msg %}
+
 <script>
-  alert("{{msg}}")
-  window.location = "{% url 'Teacher:Assignment' %}"
+alert("{{msg}}")
+window.location="{% url 'Teacher:Assignment' %}"
 </script>
+
 {% endif %}
+
+{% endblock %}

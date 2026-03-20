@@ -1,40 +1,169 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'Teacher/Header.html' %}
+{% block content %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Viewuploads</title>
-</head>
+<style>
 
-<body>
-    <table border="1">
-        <tr>
-            <td>SlNo</td>
-            <td>Student Name</td>
-            <td>File</td>
-            <td>Date</td>
-            <td>Action</td>
-        </tr>
-        {% for i in submitdata %}
-        <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ i.student.student_name }}</td>
-            <td><a href="{{ i.ass_file.url }}">View File</a></td>
-            <td>{{ i.ass_date }}</td>
-            <td>
-                {% if i.ass_status == 0 %}
+.upload-wrapper{
+display:flex;
+justify-content:center;
+padding:40px;
+}
 
-                <a href="{% url 'Teacher:Addmark' i.id %}">Add Mark</a>
+.upload-card{
+width:95%;
+max-width:1000px;
+background:white;
+border-radius:14px;
+box-shadow:0 15px 35px rgba(0,0,0,0.15);
+padding:25px;
+}
 
-                {% else %}
-               Mark : {{i.ass_score}}
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+.upload-title{
+text-align:center;
+font-size:26px;
+font-weight:600;
+margin-bottom:20px;
+color:#2c3e50;
+}
 
-</body>
+/* TABLE */
 
-</html>
+.upload-table{
+width:100%;
+border-collapse:collapse;
+text-align:center;
+}
+
+.upload-table th{
+background:#3498db;
+color:white;
+padding:12px;
+}
+
+.upload-table td{
+padding:10px;
+border-bottom:1px solid #eee;
+}
+
+.upload-table tr:hover{
+background:#fafafa;
+}
+
+/* FILE BUTTON */
+
+.file-btn{
+background:#9b59b6;
+color:white;
+padding:6px 12px;
+border-radius:6px;
+text-decoration:none;
+font-size:13px;
+}
+
+.file-btn:hover{
+background:#7e44a3;
+}
+
+/* MARK BUTTON */
+
+.mark-btn{
+background:#27ae60;
+color:white;
+padding:6px 12px;
+border-radius:6px;
+text-decoration:none;
+font-size:13px;
+}
+
+.mark-btn:hover{
+background:#1e8c4c;
+}
+
+/* MARK BADGE */
+
+.mark-badge{
+background:#f1c40f;
+padding:6px 10px;
+border-radius:6px;
+font-weight:600;
+color:#2c3e50;
+}
+
+/* STUDENT COLUMN */
+
+.student-name{
+font-weight:600;
+color:#2c3e50;
+}
+
+</style>
+
+<div class="upload-wrapper">
+
+<div class="upload-card">
+
+<div class="upload-title">
+Student Assignment Submissions
+</div>
+
+<table class="upload-table">
+
+<tr>
+<th>SlNo</th>
+<th>Student Name</th>
+<th>File</th>
+<th>Date</th>
+<th>Action</th>
+</tr>
+
+{% for i in submitdata %}
+
+<tr>
+
+<td>{{ forloop.counter }}</td>
+
+<td class="student-name">
+{{ i.student.student_name }}
+</td>
+
+<td>
+
+<a href="{{ i.ass_file.url }}" class="file-btn">
+View File
+</a>
+
+</td>
+
+<td>
+{{ i.ass_date }}
+</td>
+
+<td>
+
+{% if i.ass_status == 0 %}
+
+<a href="{% url 'Teacher:Addmark' i.id %}" class="mark-btn">
+Add Mark
+</a>
+
+{% else %}
+
+<span class="mark-badge">
+Mark : {{i.ass_score}}
+</span>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+</div>
+
+{% endblock %}

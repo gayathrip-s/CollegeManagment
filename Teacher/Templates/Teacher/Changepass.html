@@ -1,37 +1,168 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Changepassword</title>
-</head>
-<body>
-    <form action="" method="post">
-        {% csrf_token %}
-    <table border="1">
-        <tr>
-            <td>Old Password</td>
-            <td><input type="password"required name="txt_password" id="txt_password"></td>
-        </tr>
-        <tr>
-            <td> New Password</td>
-            <td><input type="password"required name="txt_newpassword" id="txt_newpassword" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required name="txt_pass" /></td>
-        </tr>
-        <tr>
-            <td>Re-type Password</td>
-            <td><input type="password"required name="txt_repassword" id="txt_repassword"></td>
-        </tr>
-        <tr>
-            
-            <td colspan="2" align="center"><input type="submit" value="Change"><input type="submit" value="Cancel"></td>
-        </tr>
-    </table>
-    </form>
-</body>
-</html>
+{% extends 'Teacher/Header.html' %}
+{% block content %}
+
+<style>
+
+.password-wrapper{
+display:flex;
+justify-content:center;
+align-items:center;
+padding:60px 20px;
+}
+
+.password-card{
+width:420px;
+background:white;
+border-radius:14px;
+box-shadow:0 15px 35px rgba(0,0,0,0.15);
+padding:30px;
+animation:slideFade 0.6s ease;
+}
+
+@keyframes slideFade{
+from{
+opacity:0;
+transform:translateY(25px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+.password-title{
+text-align:center;
+font-size:24px;
+font-weight:600;
+margin-bottom:25px;
+color:#2c3e50;
+}
+
+.password-table{
+width:100%;
+border-collapse:collapse;
+}
+
+.password-table td{
+padding:10px;
+}
+
+.password-input{
+width:100%;
+padding:9px;
+border-radius:6px;
+border:1px solid #ccc;
+transition:0.3s;
+}
+
+.password-input:focus{
+outline:none;
+border-color:#3498db;
+box-shadow:0 0 6px rgba(52,152,219,0.4);
+}
+
+.password-btn-row{
+text-align:center;
+padding-top:10px;
+}
+
+.change-btn{
+background:linear-gradient(135deg,#27ae60,#2ecc71);
+color:white;
+border:none;
+padding:10px 20px;
+border-radius:6px;
+cursor:pointer;
+font-weight:500;
+margin-right:10px;
+transition:0.3s;
+}
+
+.change-btn:hover{
+transform:scale(1.05);
+box-shadow:0 6px 15px rgba(0,0,0,0.2);
+}
+
+.cancel-btn{
+background:#e74c3c;
+color:white;
+border:none;
+padding:10px 20px;
+border-radius:6px;
+cursor:pointer;
+font-weight:500;
+transition:0.3s;
+}
+
+.cancel-btn:hover{
+background:#c0392b;
+}
+
+</style>
+
+<div class="password-wrapper">
+
+<div class="password-card">
+
+<div class="password-title">
+Change Password
+</div>
+
+<form action="" method="post">
+
+{% csrf_token %}
+
+<table class="password-table">
+
+<tr>
+<td>Old Password</td>
+<td>
+<input type="password" required name="txt_password" id="txt_password" class="password-input">
+</td>
+</tr>
+
+<tr>
+<td>New Password</td>
+<td>
+<input type="password"
+required
+name="txt_newpassword"
+id="txt_newpassword"
+class="password-input"
+pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters">
+</td>
+</tr>
+
+<tr>
+<td>Re-type Password</td>
+<td>
+<input type="password" required name="txt_repassword" id="txt_repassword" class="password-input">
+</td>
+</tr>
+
+<tr>
+<td colspan="2" class="password-btn-row">
+<input type="submit" value="Change" class="change-btn">
+<input type="submit" value="Cancel" class="cancel-btn">
+</td>
+</tr>
+
+</table>
+
+</form>
+
+</div>
+
+</div>
+
 {% if msg %}
+
 <script>
-    alert("{{msg}}")
-    window.location = "{% url 'Teacher:Myprofile' %}"
+alert("{{msg}}")
+window.location="{% url 'Teacher:Myprofile' %}"
 </script>
+
 {% endif %}
+
+{% endblock %}

@@ -1,107 +1,214 @@
-<!DOCTYPE html>
-<html>
+{% extends 'Teacher/Header.html' %}
+{% block content %}
 
-<head>
-    <title>View Attendance</title>
+<style>
 
-    
+.attendance-wrapper{
+display:flex;
+justify-content:center;
+padding:40px;
+}
 
-</head>
+.attendance-card{
+width:90%;
+max-width:950px;
+background:white;
+border-radius:14px;
+box-shadow:0 15px 35px rgba(0,0,0,0.15);
+padding:25px;
+animation:fadeUp 0.5s ease;
+}
 
-<body>
+@keyframes fadeUp{
+from{opacity:0;transform:translateY(20px);}
+to{opacity:1;transform:translateY(0);}
+}
 
-    <div class="container">
+.attendance-title{
+font-size:24px;
+font-weight:600;
+margin-bottom:20px;
+text-align:center;
+color:#2c3e50;
+}
 
-        <h2>Attendance Details</h2>
+/* FILTER FORM */
 
-        <form method="post">
-            {% csrf_token %}
+.filter-form{
+display:flex;
+gap:15px;
+flex-wrap:wrap;
+align-items:center;
+margin-bottom:15px;
+}
 
-            Select Semester:
+.filter-form select,
+.filter-form input{
+padding:8px;
+border-radius:6px;
+border:1px solid #ccc;
+}
 
-            <select name="sel_semester" required>
+.filter-btn{
+background:#3498db;
+color:white;
+border:none;
+padding:8px 16px;
+border-radius:6px;
+cursor:pointer;
+}
 
-                <option value="">-- Select Semester --</option>
+.filter-btn:hover{
+background:#2c80c9;
+}
 
-                {% for s in semesterdata %}
+/* TABLE */
 
-                <option value="{{ s.id }}" {% if s.id|stringformat:"s" == selected_semester %}selected{% endif %}>
-                    {{ s.semester_name }}
-                </option>
+.attendance-table{
+width:100%;
+border-collapse:collapse;
+text-align:center;
+}
 
-                {% endfor %}
+.attendance-table th{
+background:#f4f6f9;
+padding:12px;
+}
 
-            </select>
+.attendance-table td{
+padding:10px;
+border-bottom:1px solid #ddd;
+}
 
-            Select Date:
+.attendance-table tr:hover{
+background:#fafafa;
+}
 
-            <input type="date" name="sel_date" value="{{selected_date}}">
+/* STATUS SELECT */
 
-            <button type="submit">View</button>
+.status-select{
+padding:5px;
+border-radius:5px;
+}
 
-        </form>
+/* SAVE BUTTON */
 
-        <hr>
+.savebtn{
+margin-top:15px;
+background:#27ae60;
+color:white;
+border:none;
+padding:10px 20px;
+border-radius:6px;
+cursor:pointer;
+}
 
-        <form method="post" action="{% url 'Teacher:updateattendance' %}">
-            {% csrf_token %}
+.savebtn:hover{
+transform:scale(1.05);
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
+}
 
-            <table border="1">
+</style>
 
-                <tr>
-                    <th>Date</th>
-                    <th>Subject</th>
-                    <th>Teacher</th>
-                    <th>Hour</th>
-                    <th>Status</th>
-                </tr>
+<div class="attendance-wrapper">
 
-                {% for a in attendancedata %}
+<div class="attendance-card">
 
-                <tr>
+<div class="attendance-title">
+Attendance Details
+</div>
 
-                    <td>{{ a.date }}</td>
+<form method="post" class="filter-form">
 
-                    <td>{{ a.subject.subject_name }}</td>
+{% csrf_token %}
 
-                    <td>{{ a.teacher.teacher_name }}</td>
+<label>Semester:</label>
 
-                    <td>{{ a.hour }}</td>
+<select name="sel_semester" required>
 
-                    <td>
+<option value="">-- Select Semester --</option>
 
-                        <select name="status_{{a.id}}">
+{% for s in semesterdata %}
 
-                            <option value="1" {% if a.status == 1 %}selected{% endif %}>Present</option>
+<option value="{{ s.id }}" {% if s.id|stringformat:"s" == selected_semester %}selected{% endif %}>
+{{ s.semester_name }}
+</option>
+{% endfor %}
 
-                            <option value="0" {% if a.status == 0 %}selected{% endif %}>Absent</option>
+</select>
 
-                        </select>
+<label>Date:</label>
 
-                        <input type="hidden" name="attendance_id" value="{{a.id}}">
+<input type="date" name="sel_date" value="{{selected_date}}">
 
-                    </td>
+<button type="submit" class="filter-btn">
+View
+</button>
 
-                </tr>
+</form>
 
-                {% empty %}
+<hr>
 
-                <tr>
-                    <td colspan="5">No attendance records found</td>
-                </tr>
+<form method="post" action="{% url 'Teacher:updateattendance' %}">
 
-                {% endfor %}
+{% csrf_token %}
 
-            </table>
+<table class="attendance-table">
 
-            <br>
+<tr>
+<th>Date</th>
+<th>Subject</th>
+<th>Teacher</th>
+<th>Hour</th>
+<th>Status</th>
+</tr>
 
-            <button type="submit" class="savebtn">Update Attendance</button>
+{% for a in attendancedata %}
 
-        </form>
+<tr>
 
-    </div>
+<td>{{ a.date }}</td>
 
-</body>
+<td>{{ a.subject.subject_name }}</td>
 
-</html>
+<td>{{ a.teacher.teacher_name }}</td>
+
+<td>{{ a.hour }}</td>
+
+<td>
+
+<select name="status_{{a.id}}" class="status-select">
+
+<option value="1" {% if a.status == 1 %}selected{% endif %}>Present</option>
+
+<option value="0" {% if a.status == 0 %}selected{% endif %}>Absent</option>
+
+</select>
+
+<input type="hidden" name="attendance_id" value="{{a.id}}">
+
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+<td colspan="5">No attendance records found</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+<button type="submit" class="savebtn">
+Update Attendance
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

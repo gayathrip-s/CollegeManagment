@@ -1,86 +1,217 @@
 {% extends 'Student/Head.html' %}
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duty Leave Application</title>
-</head>
-<body>
-    <form action="" method="post">
-        {% csrf_token %}
-        <table border="1">
-            <tr>
-                <td>Purpose</td>
-                <td><select name="sel_purpose" required id="sel_purpose">
-                <option value="">---select---</option>
-                {% for i in purposedata %}
-                <option value="{{i.id}}">{{i.purpose_name}}</option>
-                {% endfor %}
-            </select></td>
-            </tr>
-            <tr>
-                <td>Reason</td>
-                <td><textarea name="txt_reason" id="txt_reason"></textarea></td>
-            </tr>
-            <tr>
-                <td>Hour</td>
-                <td><input type="text" name="txt_hour" id="txt_hour"></td>
-            </tr>
-            <tr>
-                <td>From Date</td>
-                <td><input type="date" name="txt_fromdate" id="txt_todate"></td>
-            </tr>
-            <tr>
-                <td>To Date</td>
-                <td><input type="date" name="txt_todate" id="txt_todate"></td>
-            </tr>
-            <tr>
-                <td colspan="2" align="center"><input type="submit" value="Apply"></td>
-            </tr>
-        </table>
-    </form>
-    <br>
-    <br>
-    <table border="1">
-        <tr>
-            <td>SlNo</td>
-            <td>Purpose</td>
-            <td>Reason</td>
-            <td>Hour</td>
-            <td>From date</td>
-            <td>To Date</td>
-            <td>Action</td>
-        </tr>
-        {% for i in dutyleavedata %}
-        <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ i.purpose.purpose_name }}</td>
-            <td>{{ i.dutyleave_reason }}</td>
-            <td>{{ i.dutyleave_hour }}</td>
-            <td>{{ i.dutyleave_fromdate }}</td>
-            <td>{{ i.dutyleave_todate }}</td>
-            <td>
-                {% if i.dutyleave_status == 0 %}
-                <a href="{% url 'Student:deldutyleave' i.id  %}">Delete</a>
-                {% elif i.dutyleave_status == 1 %}
-                Accepted    
-                {% else %}
-                Rejected
-                {% endif %}
-            
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-</body>
-</html>
+
+<style>
+
+.duty-card{
+background:rgba(255,255,255,0.95);
+border-radius:15px;
+box-shadow:0 15px 35px rgba(0,0,0,0.15);
+padding:30px;
+animation:fadeSlide 0.8s ease;
+}
+
+@keyframes fadeSlide{
+from{
+opacity:0;
+transform:translateY(30px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+.card-header-modern{
+background:linear-gradient(135deg,#4e73df,#224abe);
+color:white;
+padding:12px;
+border-radius:10px;
+text-align:center;
+font-size:20px;
+font-weight:600;
+margin-bottom:20px;
+}
+
+.btn-modern{
+border-radius:25px;
+padding:6px 18px;
+}
+
+.table-modern{
+background:white;
+border-radius:10px;
+overflow:hidden;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+.badge-pending{
+background:#ffc107;
+color:black;
+}
+
+.badge-accepted{
+background:#28a745;
+}
+
+.badge-rejected{
+background:#dc3545;
+}
+
+</style>
+
+<div class="container">
+
+<div class="row justify-content-center">
+
+<div class="col-lg-6">
+
+<div class="duty-card">
+
+<div class="card-header-modern">
+<i class="fa fa-file-signature"></i> Duty Leave Application
+</div>
+
+<form method="post">
+{% csrf_token %}
+
+<div class="form-group mb-3">
+<label>Purpose</label>
+<select name="sel_purpose" class="form-control" required>
+<option value="">--- Select Purpose ---</option>
+{% for i in purposedata %}
+<option value="{{i.id}}">{{i.purpose_name}}</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="form-group mb-3">
+<label>Reason</label>
+<textarea name="txt_reason" class="form-control" rows="3" required></textarea>
+</div>
+
+<div class="form-group mb-3">
+<label>Hour</label>
+<input type="number" name="txt_hour" class="form-control" required>
+</div>
+
+<div class="form-group mb-3">
+<label>From Date</label>
+<input type="date" name="txt_fromdate" class="form-control" required>
+</div>
+
+<div class="form-group mb-4">
+<label>To Date</label>
+<input type="date" name="txt_todate" class="form-control" required>
+</div>
+
+<div class="text-center">
+<button type="submit" class="btn btn-success btn-modern">
+<i class="fa fa-paper-plane"></i> Apply
+</button>
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+<br><br>
+
+<div class="row justify-content-center">
+
+<div class="col-lg-10">
+
+<div class="duty-card">
+
+<div class="card-header-modern">
+<i class="fa fa-list"></i> My Duty Leave Requests
+</div>
+
+<div class="table-responsive">
+
+<table class="table table-hover table-bordered table-modern">
+
+<thead class="table-dark">
+
+<tr>
+<th>SlNo</th>
+<th>Purpose</th>
+<th>Reason</th>
+<th>Hour</th>
+<th>From Date</th>
+<th>To Date</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for i in dutyleavedata %}
+
+<tr>
+
+<td>{{ forloop.counter }}</td>
+<td>{{ i.purpose.purpose_name }}</td>
+<td>{{ i.dutyleave_reason }}</td>
+<td>{{ i.dutyleave_hour }}</td>
+<td>{{ i.dutyleave_fromdate }}</td>
+<td>{{ i.dutyleave_todate }}</td>
+
+<td>
+
+{% if i.dutyleave_status == 0 %} <span class="badge badge-pending">Pending</span>
+
+{% elif i.dutyleave_status == 1 %} <span class="badge badge-accepted">Accepted</span>
+
+{% else %} <span class="badge badge-rejected">Rejected</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+{% if i.dutyleave_status == 0 %} <a href="{% url 'Student:deldutyleave' i.id %}" 
+class="btn btn-danger btn-sm"
+onclick="return confirm('Delete this request?')"> <i class="fa fa-trash"></i> </a>
+{% else %}
+----------
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
 {% if msg %}
+
 <script>
-    alert("{{msg}}")
-    window.location = "{% url 'Student:dutyleave'  %}"
+alert("{{msg}}")
+window.location="{% url 'Student:dutyleave' %}"
 </script>
+
 {% endif %}
 
 {% endblock %}
