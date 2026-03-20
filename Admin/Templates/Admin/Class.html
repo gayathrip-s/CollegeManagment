@@ -1,200 +1,98 @@
-{% extends 'Admin/Header.html' %}
+{% extends 'Admin/Head.html' %}
+{% load static %}
 
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Class</title>
+<div class="container-fluid py-4">
+    <div class="row pt-4 justify-content-center">
+        <div class="col-lg-11">
+            <!-- Header Section -->
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div>
+                    <h2 class="h3 fw-bold mb-1">Batch & Class Management</h2>
+                    <p class="text-muted small mb-0">Define academic batches and map them to specific courses and departments</p>
+                </div>
+                <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle">
+                    <i class="fas fa-users-cog fa-2x"></i>
+                </div>
+            </div>
 
-    <style>
+            <!-- Registration Form Card -->
+            <div class="card bg-white bg-opacity-5 border border-white border-opacity-10 rounded-4 shadow-sm mb-5 animate-slideIn">
+                <div class="card-body p-4">
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <div class="row g-4 align-items-end">
+                            <div class="col-md-3">
+                                <label class="form-label text-muted small fw-bold uppercase">Target Department</label>
+                                <select name="sel_department" id="sel_department" required class="form-select bg-dark border-secondary text-white py-2 shadow-sm">
+                                    <option value="">-- Choose Dept --</option>
+                                    {% for i in departmentdata %}
+                                    <option value="{{i.id}}">{{i.department_name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-muted small fw-bold uppercase">Affiliated Course</label>
+                                <select name="sel_course" id="sel_course" required class="form-select bg-dark border-secondary text-white py-2 shadow-sm">
+                                    <option value="">-- Choose Course --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-muted small fw-bold uppercase">Batch / Class Name</label>
+                                <input type="text" name="txt_class" id="txt_class" required class="form-control bg-dark border-secondary text-white py-2 shadow-sm" placeholder="e.g. Batch 2024-A">
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary w-100 py-2 rounded-3 shadow-sm">
+                                    <i class="fas fa-plus-circle me-2"></i>Create Batch
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
-        /* ===== Wrapper ===== */
-        .cls-wrapper {
-            width: 90%;
-            margin: 40px auto;
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        .cls-title {
-            font-size: 28px;
-            font-weight: 600;
-            margin-bottom: 30px;
-            color: #1e3a8a;
-        }
-
-        /* ===== Form Card ===== */
-        .cls-form-card {
-            width: 100%;
-            max-width: 750px;
-            border-collapse: collapse;
-            background: linear-gradient(135deg, #eff6ff, #ffffff);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            border-radius: 18px;
-            overflow: hidden;
-            margin-bottom: 40px;
-        }
-
-        .cls-form-card td {
-            padding: 16px;
-        }
-
-        .cls-label {
-            font-weight: 500;
-            color: #374151;
-        }
-
-        .cls-input,
-        .cls-select {
-            width: 95%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #cbd5e1;
-            transition: 0.3s ease;
-            font-size: 14px;
-        }
-
-        .cls-input:focus,
-        .cls-select:focus {
-            border-color: #2563eb;
-            outline: none;
-            box-shadow: 0 0 12px rgba(37, 99, 235, 0.4);
-        }
-
-        .cls-btn {
-            background: linear-gradient(135deg, #2563eb, #1e40af);
-            color: white;
-            padding: 10px 30px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: 0.3s ease;
-        }
-
-        .cls-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(30, 64, 175, 0.4);
-        }
-
-        /* ===== Table ===== */
-        .cls-table {
-            width: 100%;
-            border-collapse: collapse;
-            border-radius: 18px;
-            overflow: hidden;
-            background: #ffffff;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-        }
-
-        .cls-table th {
-            background: linear-gradient(135deg, #0f172a, #1e3a8a);
-            color: white;
-            padding: 14px;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-        }
-
-        .cls-table td {
-            padding: 14px;
-            text-align: center;
-        }
-
-        .cls-table tr:nth-child(even) {
-            background-color: #f1f5f9;
-        }
-
-        .cls-table tr:hover {
-            background-color: #dbeafe;
-            transition: 0.3s ease;
-        }
-
-        /* ===== Delete Link ===== */
-        .cls-delete-link {
-            color: #ef4444;
-            font-weight: 600;
-            text-decoration: none;
-            transition: 0.3s ease;
-        }
-
-        .cls-delete-link:hover {
-            color: #b91c1c;
-            text-decoration: underline;
-        }
-
-    </style>
-</head>
-
-<body>
-
-<div class="cls-wrapper">
-
-    <div class="cls-title">Class Management</div>
-
-    <form action="" method="post">
-        {% csrf_token %}
-        <table border="1" class="cls-form-card">
-            <tr>
-                <td class="cls-label">Class</td>
-                <td>
-                    <input type="text" name="txt_class" id="txt_class" required class="cls-input">
-                </td>
-            </tr>
-            <tr>
-                <td class="cls-label">Department</td>
-                <td>
-                    <select name="sel_department" id="sel_department" required class="cls-select">
-                        <option value="">--- Select ---</option>
-                        {% for i in departmentdata %}
-                        <option value="{{i.id}}">{{i.department_name}}</option>
-                        {% endfor %}
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td class="cls-label">Course</td>
-                <td>
-                    <select name="sel_course" id="sel_course" required class="cls-select">
-                        <option value="">--- Select ---</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" align="center">
-                    <input type="submit" value="Submit" class="cls-btn">
-                </td>
-            </tr>
-        </table>
-    </form>
-
-    <table border="1" class="cls-table">
-        <tr>
-            <th>SlNo</th>
-            <th>Class</th>
-            <th>Department</th>
-            <th>Course</th>
-            <th>Action</th>
-        </tr>
-        {% for i in classdata %}
-        <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ i.class_name }}</td>
-            <td>{{ i.course.department.department_name }}</td>
-            <td>{{ i.course.course_name }}</td>
-            <td>
-                <a href="{% url 'Admin:delclass' i.id %}" class="cls-delete-link">
-                    Delete
-                </a>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-
+            <!-- List Container -->
+            <div class="card bg-white bg-opacity-5 border border-white border-opacity-10 rounded-4 shadow-sm overflow-hidden animate-fadeIn">
+                <div class="card-header bg-white bg-opacity-5 py-3 px-4 border-0">
+                    <h5 class="mb-0 fw-bold small text-muted uppercase">Active Batch Directory</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover mb-0 align-middle">
+                        <thead class="bg-white bg-opacity-10 border-0">
+                            <tr>
+                                <th class="px-4 py-3 border-0 small text-muted uppercase">Sl. No</th>
+                                <th class="px-4 py-3 border-0 small text-muted uppercase">Batch Identity</th>
+                                <th class="px-4 py-3 border-0 small text-muted uppercase">Course Body</th>
+                                <th class="px-4 py-3 border-0 small text-muted uppercase text-end">Control</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in classdata %}
+                            <tr class="border-white border-opacity-5">
+                                <td class="px-4 py-3 text-muted">{{ forloop.counter }}</td>
+                                <td class="px-4 py-3 fw-bold text-primary">{{ i.class_name }}</td>
+                                <td class="px-4 py-3">
+                                    <div class="small fw-bold">{{ i.course.course_name }}</div>
+                                    <div class="smaller text-muted opacity-50">{{ i.course.department.department_name }}</div>
+                                </td>
+                                <td class="px-4 py-3 text-end">
+                                    <a href="{% url 'Admin:delclass' i.id %}" class="btn btn-sm btn-outline-danger border-0 rounded-circle" onclick="return confirm('Expunge this batch data?')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-muted opacity-50">No academic batches initialized.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-</body>
-</html>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
@@ -217,5 +115,4 @@
     window.location = "{% url 'Admin:Class' %}"
 </script>
 {% endif %}
-
 {% endblock %}

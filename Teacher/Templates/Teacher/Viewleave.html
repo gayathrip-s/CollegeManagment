@@ -1,208 +1,101 @@
-{% extends 'Teacher/Header.html' %}
+{% extends 'Teacher/Head.html' %}
+{% load static %}
+
 {% block content %}
+<div class="container-fluid py-4">
+    <div class="row pt-4 justify-content-center">
+        <div class="col-lg-12">
+            <!-- Header Section -->
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div>
+                    <h2 class="h3 fw-bold mb-1">Pedagogical Absence Review</h2>
+                    <p class="text-muted small mb-0">Review and authorize student leave requests for your designated class</p>
+                </div>
+                <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle">
+                    <i class="fas fa-envelope-open-text fa-2x"></i>
+                </div>
+            </div>
 
-<style>
-
-.leave-wrapper{
-display:flex;
-justify-content:center;
-padding:40px;
-}
-
-.leave-card{
-width:95%;
-max-width:1100px;
-background:white;
-border-radius:14px;
-box-shadow:0 15px 35px rgba(0,0,0,0.15);
-padding:25px;
-animation:fadeUp 0.5s ease;
-}
-
-@keyframes fadeUp{
-from{opacity:0;transform:translateY(20px);}
-to{opacity:1;transform:translateY(0);}
-}
-
-.leave-title{
-font-size:24px;
-font-weight:600;
-text-align:center;
-margin-bottom:20px;
-color:#2c3e50;
-}
-
-/* TABLE */
-
-.leave-table{
-width:100%;
-border-collapse:collapse;
-text-align:center;
-}
-
-.leave-table th{
-background:#f4f6f9;
-padding:12px;
-font-weight:600;
-}
-
-.leave-table td{
-padding:10px;
-border-bottom:1px solid #ddd;
-}
-
-.leave-table tr:hover{
-background:#fafafa;
-}
-
-/* PHOTO */
-
-.student-photo{
-width:70px;
-height:70px;
-border-radius:50%;
-object-fit:cover;
-border:2px solid #ddd;
-}
-
-/* BUTTONS */
-
-.action-btn{
-padding:6px 12px;
-border-radius:5px;
-text-decoration:none;
-color:white;
-font-size:13px;
-margin:2px;
-display:inline-block;
-}
-
-.accept-btn{
-background:#27ae60;
-}
-
-.reject-btn{
-background:#e74c3c;
-}
-
-.accept-btn:hover{
-background:#1e8c4c;
-}
-
-.reject-btn:hover{
-background:#c0392b;
-}
-
-/* STATUS BADGES */
-
-.badge{
-padding:5px 10px;
-border-radius:5px;
-font-size:13px;
-font-weight:500;
-}
-
-.badge-accept{
-background:#d4edda;
-color:#27ae60;
-}
-
-.badge-reject{
-background:#f8d7da;
-color:#e74c3c;
-}
-
-</style>
-
-<div class="leave-wrapper">
-
-<div class="leave-card">
-
-<div class="leave-title">
-Student Leave Requests
-</div>
-
-<table class="leave-table">
-
-<tr>
-<th>SlNo</th>
-<th>Student Name</th>
-<th>Reg No</th>
-<th>Photo</th>
-<th>Title</th>
-<th>Reason</th>
-<th>From Date</th>
-<th>To Date</th>
-<th>Action</th>
-</tr>
-
-{% for i in leavedata %}
-
-<tr>
-
-<td>{{ forloop.counter }}</td>
-
-<td>{{ i.student.student_name }}</td>
-
-<td>{{ i.student.student_registernumber }}</td>
-
-<td>
-<img src="{{i.student.student_photo.url}}" class="student-photo">
-</td>
-
-<td>{{ i.leave_title }}</td>
-
-<td>{{ i.leave_reason }}</td>
-
-<td>{{ i.leave_fromdate }}</td>
-
-<td>{{ i.leave_todate }}</td>
-
-<td>
-
-{% if i.leave_status == 0 %}
-
-<a href="{% url 'Teacher:accept' i.id %}" class="action-btn accept-btn">
-Accept
-</a>
-
-<a href="{% url 'Teacher:reject' i.id %}" class="action-btn reject-btn">
-Reject
-</a>
-
-{% elif i.leave_status == 1 %}
-
-<span class="badge badge-accept">
-Accepted
-</span>
-
-{% else %}
-
-<span class="badge badge-reject">
-Rejected
-</span>
-
-{% endif %}
-
-</td>
-
-</tr>
-
-{% endfor %}
-
-</table>
-
-</div>
-
+            <!-- Request Journal Card -->
+            <div class="card bg-white bg-opacity-5 border border-white border-opacity-10 rounded-4 shadow-sm overflow-hidden animate-fadeIn">
+                 <div class="card-header bg-white bg-opacity-5 py-3 px-4 border-0">
+                    <h5 class="mb-0 fw-bold small text-muted uppercase letter-spacing-1">Candidate Requests</h5>
+                 </div>
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover mb-0 align-middle">
+                        <thead class="bg-white bg-opacity-10">
+                            <tr>
+                                <th class="px-4 py-3 border-0 small text-muted uppercase">Student Profile</th>
+                                <th class="px-4 py-3 border-0 small text-muted uppercase">Leave Context</th>
+                                <th class="px-4 py-3 border-0 small text-muted uppercase">Duration</th>
+                                <th class="px-4 py-3 border-0 small text-muted uppercase text-end">Administration</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in leavedata %}
+                            <tr class="border-white border-opacity-5">
+                                <td class="px-4 py-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="rounded-circle overflow-hidden shadow-sm border border-white border-opacity-10" style="width: 50px; height: 50px;">
+                                            <img src="{{ i.student.student_photo.url }}" class="w-100 h-100 object-fit-cover" alt="">
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-white">{{ i.student.student_name }}</div>
+                                            <div class="smaller text-primary opacity-75">{{ i.student.student_registernumber }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="fw-bold mb-1">{{ i.leave_title }}</div>
+                                    <div class="small text-muted italic">"{{ i.leave_reason|truncatechars:100 }}"</div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="badge bg-white bg-opacity-5 text-white border border-white border-opacity-10 px-3 py-2 rounded-3">
+                                        <div class="smaller text-muted uppercase mb-1">From: {{ i.leave_fromdate }}</div>
+                                        <div class="smaller text-muted uppercase">To:&nbsp;&nbsp;&nbsp;&nbsp; {{ i.leave_todate }}</div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-end">
+                                    {% if i.leave_status == 0 %}
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a href="{% url 'Teacher:accept' i.id %}" class="btn btn-sm btn-success bg-opacity-20 border-0 rounded-pill px-3 shadow-sm">
+                                            <i class="fas fa-check me-1"></i> Authorize
+                                        </a>
+                                        <a href="{% url 'Teacher:reject' i.id %}" class="btn btn-sm btn-danger bg-opacity-20 border-0 rounded-pill px-3 shadow-sm">
+                                            <i class="fas fa-times me-1"></i> Decline
+                                        </a>
+                                    </div>
+                                    {% elif i.leave_status == 1 %}
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-4 py-2 rounded-pill fw-bold">
+                                        Authorized
+                                    </span>
+                                    {% else %}
+                                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-4 py-2 rounded-pill fw-bold">
+                                        Declined
+                                    </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-muted opacity-50">
+                                    <i class="fas fa-calendar-check fa-3x mb-3 d-block"></i>
+                                    No pending leave applications in the journal.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% if msg %}
-
 <script>
-alert("{{msg}}")
-window.location="{% url 'Teacher:viewleave' %}"
+    alert("{{msg}}");
+    window.location="{% url 'Teacher:viewleave' %}";
 </script>
-
 {% endif %}
-
 {% endblock %}

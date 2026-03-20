@@ -3,21 +3,9 @@ from Admin import views
 app_name="Admin"
 
 urlpatterns = [
-    path('District/',views.District,name="District"),
-    path('deldistrict/<int:did>/',views.deldistrict,name="deldistrict"),
-    path('editdistrict/<int:eid>/',views.editdistrict,name="editdistrict"),
     path('AdminReg/',views.AdminReg,name="AdminReg"),
     path('deladmin/<int:did>/',views.deladmin,name="deladmin"),
     path('editadmin/<int:eid>/',views.editadmin,name="editadmin"),
-    path('Category/',views.Category,name="Category"),
-    path('delcategory/<int:did>/',views.delcategory,name="delcategory"),
-    path('editcategory/<int:eid>/',views.editcategory,name="editcategory"),
-    path('Place/',views.Place,name="Place"),
-    path('deleteplace/<int:did>/',views.deleteplace,name="deleteplace"),
-    path('editplace/<int:eid>/',views.editplace,name="editplace"),
-    path('Subcategory/',views.Subcategory,name="Subcategory"),
-    path('delsubcategory/<int:did>/',views.delsubcategory,name="delsubcategory"),
-    path('editsubcategory/<int:eid>/',views.editsubcategory,name="editsubcategory"),
     path('Department/',views.Department,name="Department"),
     path('deldepartment/<int:did>/',views.deldepartment,name="deldepartment"),
     path('Semester/',views.Semester,name="Semester"),
@@ -49,4 +37,13 @@ urlpatterns = [
     path('Purpose/',views.Purpose,name="Purpose"),
     path('delpurpose/<int:did>/',views.delpurpose,name="delpurpose"),
     path('Assignincharge/<int:id>/',views.Assignincharge,name="Assignincharge"),
+
+    path('Notification/', views.Notification, name="Notification"),
+    path('delnotification/<int:did>/', views.delnotification, name="delnotification"),
+    path('AdminViewTeacherLeave/', views.AdminViewTeacherLeave, name="AdminViewTeacherLeave"),
+    path('AcceptTeacherLeave/<int:aid>/', views.AcceptTeacherLeave, name="AcceptTeacherLeave"),
+    path('RejectTeacherLeave/<int:rid>/', views.RejectTeacherLeave, name="RejectTeacherLeave"),
+    path('SpecialTimetable/', views.SpecialTimetable, name="SpecialTimetable"),
+    path('delspecialtimetable/<int:did>/', views.delspecialtimetable, name="delspecialtimetable"),
+    path('Logout/', views.Logout, name="Logout"),
 ]

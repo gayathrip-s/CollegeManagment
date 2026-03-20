@@ -1,180 +1,82 @@
-{% extends 'Admin/Header.html' %}
+{% extends 'Admin/Head.html' %}
+{% load static %}
 
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Semester</title>
+<div class="container-fluid py-4">
+    <div class="row pt-4 justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header Section -->
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div>
+                    <h2 class="h3 fw-bold mb-1">Academic Semesters</h2>
+                    <p class="text-muted small mb-0">Define and manage academic semesters for institutional scheduling</p>
+                </div>
+                <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle">
+                    <i class="fas fa-layer-group fa-2x"></i>
+                </div>
+            </div>
 
-    <style>
+            <!-- Form Card -->
+            <div class="card bg-white bg-opacity-5 border border-white border-opacity-10 rounded-4 shadow-sm mb-5 animate-slideIn">
+                <div class="card-body p-4">
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <div class="row align-items-end g-3">
+                            <div class="col-md-9">
+                                <label class="form-label text-muted small fw-bold uppercase">Semester Name</label>
+                                <input type="text" name="txt_semester" id="txt_semester" class="form-control bg-dark border-secondary text-white py-2" placeholder="e.g. Semester 01" required>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary w-100 py-2 rounded-3 shadow-sm">
+                                    <i class="fas fa-plus-circle me-2"></i>Create New
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
-        /* ===== Wrapper ===== */
-        .sem-wrapper {
-            width: 80%;
-            margin: 40px auto;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        /* ===== Title ===== */
-        .sem-title {
-            font-size: 26px;
-            font-weight: 600;
-            margin-bottom: 25px;
-            color: #2c3e50;
-        }
-
-        /* ===== Form Card ===== */
-        .sem-form-table {
-            width: 100%;
-            max-width: 500px;
-            border-collapse: collapse;
-            background: linear-gradient(135deg, #e3f2fd, #ffffff);
-            box-shadow: 0px 6px 15px rgba(0,0,0,0.1);
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 35px;
-        }
-
-        .sem-form-table td {
-            padding: 14px;
-        }
-
-        /* ===== Input ===== */
-        .sem-input {
-            width: 95%;
-            padding: 9px;
-            border-radius: 6px;
-            border: 1px solid #bbb;
-            transition: 0.3s ease;
-        }
-
-        .sem-input:focus {
-            border-color: #3498db;
-            outline: none;
-            box-shadow: 0 0 8px rgba(52,152,219,0.5);
-        }
-
-        /* ===== Button ===== */
-        .sem-btn {
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            color: white;
-            padding: 9px 22px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: 0.3s ease;
-        }
-
-        .sem-btn:hover {
-            background: linear-gradient(135deg, #2980b9, #1f6391);
-            transform: scale(1.05);
-        }
-
-        /* ===== Table ===== */
-        .sem-table {
-            width: 100%;
-            border-collapse: collapse;
-            box-shadow: 0px 6px 15px rgba(0,0,0,0.08);
-            background-color: #ffffff;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .sem-table th {
-            background: linear-gradient(135deg, #2c3e50, #34495e);
-            color: white;
-            padding: 12px;
-        }
-
-        .sem-table td {
-            padding: 12px;
-            text-align: center;
-        }
-
-        .sem-table tr:nth-child(even) {
-            background-color: #f4f8fb;
-        }
-
-        .sem-table tr:hover {
-            background-color: #eaf3ff;
-            transition: 0.3s;
-        }
-
-        /* ===== Delete Link ===== */
-        .sem-delete-link {
-            color: #e74c3c;
-            font-weight: 600;
-            text-decoration: none;
-            transition: 0.3s ease;
-        }
-
-        .sem-delete-link:hover {
-            color: #c0392b;
-            text-decoration: underline;
-        }
-
-    </style>
-</head>
-
-<body>
-
-<div class="sem-wrapper">
-
-    <div class="sem-title">Semester Management</div>
-
-    <form action="" method="post">
-        {% csrf_token %}
-        <table border="1" class="sem-form-table">
-            <tr>
-                <td>Semester</td>
-                <td>
-                    <input type="text" name="txt_semester" 
-                           id="txt_semester" 
-                           class="sem-input" 
-                           required>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" align="center">
-                    <input type="submit" value="Submit" class="sem-btn">
-                </td>
-            </tr>
-        </table>
-    </form>
-
-    <table border="1" class="sem-table">
-        <tr>
-            <th>SlNo</th>
-            <th>Semester</th>
-            <th>Action</th>
-        </tr>
-        {% for i in semesterdata %}
-        <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ i.semester_name }}</td>
-            <td>
-                <a href="{% url 'Admin:delsemester' i.id %}" 
-                   class="sem-delete-link">
-                   Delete
-                </a>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-
+            <!-- Data Table Card -->
+            <div class="card bg-white bg-opacity-5 border border-white border-opacity-10 rounded-4 shadow-sm overflow-hidden animate-fadeIn">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover mb-0 align-middle">
+                        <thead class="bg-white bg-opacity-10 border-0">
+                            <tr>
+                                <th class="px-4 py-3 border-0 small text-muted uppercase">Sl. No</th>
+                                <th class="px-4 py-3 border-0 small text-muted uppercase">Semester Designation</th>
+                                <th class="px-4 py-3 border-0 small text-muted uppercase text-end">Manage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in semesterdata %}
+                            <tr class="border-white border-opacity-5">
+                                <td class="px-4 py-3 text-muted">{{ forloop.counter }}</td>
+                                <td class="px-4 py-3 fw-bold">{{ i.semester_name }}</td>
+                                <td class="px-4 py-3 text-end">
+                                    <a href="{% url 'Admin:delsemester' i.id %}" class="btn btn-sm btn-outline-danger border-0 rounded-circle" onclick="return confirm('Remove this semester?')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center py-5 text-muted opacity-50 text-uppercase small">
+                                    <i class="fas fa-search fa-2x mb-3 d-block opacity-20"></i>
+                                    No semesters initialized.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-</body>
-</html>
 
 {% if msg %}
 <script>
-    alert("{{msg}}")
-    window.location = "{% url 'Admin:Semester' %}"
+    alert("{{msg}}");
 </script>
 {% endif %}
-
 {% endblock %}

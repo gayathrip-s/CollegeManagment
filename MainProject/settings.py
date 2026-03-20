@@ -37,13 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Basics',
     'Admin',
     'Guest',
-    'User',
     'Teacher',
     'Student',
-    
 ]
 
 MIDDLEWARE = [
@@ -127,3 +124,14 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ── Email Configuration (Gmail SMTP) ──────────────────────────────────────────
+# Replace with your Gmail address and an App Password
+# (Google Account → Security → 2-Step Verification → App Passwords)
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = ""
+EMAIL_HOST_PASSWORD = 'your_app_password_here'    
+DEFAULT_FROM_EMAIL = 'EduSphere College Portal <your_email@gmail.com>'

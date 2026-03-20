@@ -29,7 +29,8 @@ urlpatterns = [
    path('acceptduty/<int:aid>/',views.acceptduty,name="acceptduty"),
    path('rejectduty/<int:rid>/',views.rejectduty,name="rejectduty"),
    path('myassignedsubject/',views.myassignedsubject,name="myassignedsubject"),
- 
    path('updateattendance/',views.updateattendance,name="updateattendance"),
-   path('Logout/',views.Logout,name="Logout")
+   path('Logout/',views.Logout,name="Logout"),
+   path('ApplyLeave/', views.ApplyLeave, name="ApplyLeave"),
+   path('delteacherleave/<int:did>/', views.delteacherleave, name="delteacherleave"),
 ]

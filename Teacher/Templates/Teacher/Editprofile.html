@@ -1,266 +1,86 @@
-{% extends 'Teacher/Header.html' %}
+{% extends 'Teacher/Head.html' %}
+{% load static %}
+
 {% block content %}
+<div class="container py-4">
+    <div class="row pt-5 justify-content-center">
+        <div class="col-lg-5">
+            <!-- Form Card -->
+            <div class="card bg-white bg-opacity-5 border border-white border-opacity-10 rounded-4 shadow-lg overflow-hidden animate-fadeIn">
+                <div class="card-body p-5">
+                    <div class="text-center mb-5">
+                        <div class="position-relative d-inline-block">
+                            <div class="rounded-circle border border-4 border-primary d-inline-block overflow-hidden shadow-lg" style="width: 120px; height: 120px; background: #1e293b;">
+                                <img id="previewPhoto" src="{{ teacher.teacher_photo.url }}" class="w-100 h-100 object-fit-cover shadow-sm" alt="Preview">
+                            </div>
+                            <label for="file_photo" class="btn btn-sm btn-primary border-0 rounded-circle position-absolute bottom-0 end-0 p-2 shadow" style="width: 35px; height: 35px;">
+                                <i class="fas fa-camera smaller"></i>
+                            </label>
+                            <input type="file" name="file_photo" id="file_photo" class="d-none" onchange="previewImage(event)">
+                        </div>
+                        <h2 class="h3 fw-bold mt-4 mb-2">Update Credentials</h2>
+                        <p class="text-muted small">Synchronize your personal profile with institutional records</p>
+                    </div>
 
-<style>
+                    <form action="" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-bold uppercase letter-spacing-1">Full Legal Name</label>
+                            <input type="text" name="txt_name" value="{{ teacher.teacher_name }}" class="form-control bg-dark border-secondary text-white py-2 shadow-sm" required pattern="^[A-Z]+[a-zA-Z ]*$" title="Start with Capital">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-bold uppercase letter-spacing-1">Institutional Email</label>
+                            <input type="email" name="txt_email" value="{{ teacher.teacher_email }}" class="form-control bg-dark border-secondary text-white py-2 shadow-sm" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-bold uppercase letter-spacing-1">Primary Contact</label>
+                            <input type="text" name="txt_contact" id="txt_contact" value="{{ teacher.teacher_contact }}" class="form-control bg-dark border-secondary text-white py-2 shadow-sm" required pattern="[6-9]{1}[0-9]{9}" onkeyup="validatePhone()">
+                            <div id="phoneMsg" class="smaller mt-2 opacity-75"></div>
+                        </div>
 
-.editprofile-wrapper{
-display:flex;
-justify-content:center;
-align-items:center;
-padding:60px 20px;
-}
-
-.editprofile-card{
-width:460px;
-background:white;
-border-radius:14px;
-box-shadow:0 15px 35px rgba(0,0,0,0.15);
-padding:30px;
-animation:fadeUp 0.6s ease;
-}
-
-@keyframes fadeUp{
-from{opacity:0;transform:translateY(25px);}
-to{opacity:1;transform:translateY(0);}
-}
-
-.editprofile-title{
-text-align:center;
-font-size:24px;
-font-weight:600;
-margin-bottom:20px;
-color:#2c3e50;
-}
-
-.profile-photo-preview{
-display:flex;
-justify-content:center;
-margin-bottom:20px;
-}
-
-.profile-photo-preview img{
-width:110px;
-height:110px;
-border-radius:50%;
-object-fit:cover;
-border:4px solid #eee;
-}
-
-.editprofile-table{
-width:100%;
-border-collapse:collapse;
-}
-
-.editprofile-table td{
-padding:10px;
-}
-
-.editprofile-input{
-width:100%;
-padding:9px;
-border-radius:6px;
-border:1px solid #ccc;
-transition:0.3s;
-}
-
-.editprofile-input:focus{
-outline:none;
-border-color:#3498db;
-box-shadow:0 0 6px rgba(52,152,219,0.4);
-}
-
-.validation-text{
-font-size:12px;
-margin-top:4px;
-}
-
-.editprofile-btn-row{
-text-align:center;
-padding-top:10px;
-}
-
-.update-btn{
-background:linear-gradient(135deg,#3498db,#5dade2);
-color:white;
-border:none;
-padding:10px 22px;
-border-radius:6px;
-cursor:pointer;
-font-weight:500;
-transition:0.3s;
-}
-
-.update-btn:hover{
-transform:scale(1.05);
-box-shadow:0 6px 15px rgba(0,0,0,0.2);
-}
-
-/* TOAST */
-
-.toast{
-position:fixed;
-top:30px;
-right:30px;
-background:#2ecc71;
-color:white;
-padding:12px 20px;
-border-radius:6px;
-box-shadow:0 6px 20px rgba(0,0,0,0.2);
-opacity:0;
-transition:0.4s;
-}
-
-.toast.show{
-opacity:1;
-}
-
-</style>
-
-<div class="editprofile-wrapper">
-
-<div class="editprofile-card">
-
-<div class="editprofile-title">
-Edit Profile
-</div>
-
-<div class="profile-photo-preview">
-<img id="previewPhoto" src="{{teacher.teacher_photo.url}}">
-</div>
-
-<form action="" method="post" enctype="multipart/form-data">
-
-{% csrf_token %}
-
-<table class="editprofile-table">
-
-<tr>
-<td>Name</td>
-<td>
-<input type="text"
-required
-name="txt_name"
-id="txt_name"
-value="{{teacher.teacher_name}}"
-class="editprofile-input"
-pattern="^[A-Z]+[a-zA-Z ]*$">
-</td>
-</tr>
-
-<tr>
-<td>Email</td>
-<td>
-<input type="email"
-required
-name="txt_email"
-id="txt_email"
-value="{{teacher.teacher_email}}"
-class="editprofile-input">
-</td>
-</tr>
-
-<tr>
-<td>Contact</td>
-<td>
-<input type="text"
-required
-name="txt_contact"
-id="txt_contact"
-value="{{teacher.teacher_contact}}"
-class="editprofile-input"
-pattern="[6-9]{1}[0-9]{9}"
-onkeyup="validatePhone()">
-
-<div id="phoneMsg" class="validation-text"></div>
-
-</td>
-</tr>
-
-<tr>
-<td>Change Photo</td>
-<td>
-<input type="file" name="file_photo" id="file_photo" class="editprofile-input" onchange="previewImage(event)">
-</td>
-</tr>
-
-<tr>
-<td colspan="2" class="editprofile-btn-row">
-<input type="submit" value="Update" class="update-btn">
-</td>
-</tr>
-
-</table>
-
-</form>
-
-</div>
-
-</div>
-
-<div id="toastMsg" class="toast">
-Profile Updated Successfully
+                        <div class="d-grid mt-5 shadow-lg">
+                            <button type="submit" class="btn btn-primary py-3 rounded-pill fw-bold transform-active transition-all">
+                                <i class="fas fa-save me-2"></i>Persist Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="bg-white bg-opacity-5 py-4 border-top border-white border-opacity-10 text-center">
+                    <a href="{% url 'Teacher:Myprofile' %}" class="text-muted small text-decoration-none hover-underline"><i class="fas fa-arrow-left me-1"></i> Abort and Return</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-
 function previewImage(event){
-
-var reader=new FileReader();
-
-reader.onload=function(){
-var output=document.getElementById('previewPhoto');
-output.src=reader.result;
+    var reader = new FileReader();
+    reader.onload = function(){
+        var output = document.getElementById('previewPhoto');
+        output.src = reader.result;
+    }
+    reader.readAsDataURL(event.target.files[0]);
 }
-
-reader.readAsDataURL(event.target.files[0]);
-
-}
-
 
 function validatePhone(){
-
-var phone=document.getElementById("txt_contact").value;
-var msg=document.getElementById("phoneMsg");
-
-var pattern=/^[6-9][0-9]{9}$/;
-
-if(pattern.test(phone)){
-
-msg.innerHTML="Valid Phone Number ✔";
-msg.style.color="green";
-
-}else{
-
-msg.innerHTML="Invalid Phone Number ✖";
-msg.style.color="red";
-
+    var phone = document.getElementById("txt_contact").value;
+    var msg = document.getElementById("phoneMsg");
+    var pattern = /^[6-9][0-9]{9}$/;
+    if(pattern.test(phone)){
+        msg.innerHTML = "Valid Phone Number <i class='fas fa-check-circle text-success'></i>";
+        msg.style.color = "transparent";
+    }else{
+        msg.innerHTML = "Invalid Phone Number <i class='fas fa-times-circle text-danger'></i>";
+        msg.style.color = "transparent";
+    }
 }
-
-}
-
-
-function showToast(){
-
-var toast=document.getElementById("toastMsg");
-toast.classList.add("show");
-
-setTimeout(function(){
-toast.classList.remove("show");
-},3000);
-
-}
-
 </script>
 
 {% if msg %}
-
 <script>
-showToast()
-setTimeout(function(){
-window.location="{% url 'Teacher:Myprofile' %}"
-},2000)
+    alert("{{msg}}");
 </script>
-
 {% endif %}
-
 {% endblock %}

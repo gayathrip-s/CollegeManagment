@@ -23,4 +23,5 @@ urlpatterns = [
     path('dutyleave/',views.dutyleave,name="dutyleave"),
     path('logout/', views.logout, name="logout"),
     path('deldutyleave/<int:did>/',views.deldutyleave,name="deldutyleave"),
+    path('chat/',views.chat,name="chat"),
 ]

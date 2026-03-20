@@ -22,13 +22,10 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('Basics/',include('Basics.urls')),
-    path('Admin/',include('Admin.urls')),
-    path('',include('Guest.urls')),
-    path('User/',include('User.urls')),
-    path('Teacher/',include('Teacher.urls')),
-    path('Student/',include('Student.urls')),
-
+    path('Admin/', include('Admin.urls')),
+    path('', include('Guest.urls')),
+    path('Teacher/', include('Teacher.urls')),
+    path('Student/', include('Student.urls')),
 ]
 
 if settings.DEBUG:

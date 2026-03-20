@@ -1,168 +1,56 @@
-{% extends 'Teacher/Header.html' %}
+{% extends 'Teacher/Head.html' %}
+{% load static %}
+
 {% block content %}
+<div class="container py-4">
+    <div class="row pt-5 justify-content-center">
+        <div class="col-lg-4">
+            <!-- Header Section -->
+            <div class="text-center mb-5">
+                <div class="bg-primary bg-opacity-10 text-primary p-4 rounded-circle d-inline-block mb-3">
+                    <i class="fas fa-shield-alt fa-3x"></i>
+                </div>
+                <h2 class="h3 fw-bold mb-1 text-white">Security Update</h2>
+                <p class="text-muted small">Synchronize your access credentials for improved account safety</p>
+            </div>
 
-<style>
+            <!-- Password Card -->
+            <div class="card bg-white bg-opacity-5 border border-white border-opacity-10 rounded-4 shadow-lg animate-slideIn">
+                <div class="card-body p-5">
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-bold uppercase letter-spacing-1">Current Entry Code</label>
+                            <input type="password" name="txt_password" class="form-control bg-dark border-secondary text-white py-2 shadow-sm" required placeholder="••••••••">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-bold uppercase letter-spacing-1">Proposed Password</label>
+                            <input type="password" name="txt_newpassword" class="form-control bg-dark border-secondary text-white py-2 shadow-sm" required placeholder="••••••••" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters">
+                        </div>
+                        <div class="mb-5">
+                            <label class="form-label text-muted small fw-bold uppercase letter-spacing-1">Confirm Identity Code</label>
+                            <input type="password" name="txt_repassword" class="form-control bg-dark border-secondary text-white py-2 shadow-sm" required placeholder="••••••••">
+                        </div>
 
-.password-wrapper{
-display:flex;
-justify-content:center;
-align-items:center;
-padding:60px 20px;
-}
-
-.password-card{
-width:420px;
-background:white;
-border-radius:14px;
-box-shadow:0 15px 35px rgba(0,0,0,0.15);
-padding:30px;
-animation:slideFade 0.6s ease;
-}
-
-@keyframes slideFade{
-from{
-opacity:0;
-transform:translateY(25px);
-}
-to{
-opacity:1;
-transform:translateY(0);
-}
-}
-
-.password-title{
-text-align:center;
-font-size:24px;
-font-weight:600;
-margin-bottom:25px;
-color:#2c3e50;
-}
-
-.password-table{
-width:100%;
-border-collapse:collapse;
-}
-
-.password-table td{
-padding:10px;
-}
-
-.password-input{
-width:100%;
-padding:9px;
-border-radius:6px;
-border:1px solid #ccc;
-transition:0.3s;
-}
-
-.password-input:focus{
-outline:none;
-border-color:#3498db;
-box-shadow:0 0 6px rgba(52,152,219,0.4);
-}
-
-.password-btn-row{
-text-align:center;
-padding-top:10px;
-}
-
-.change-btn{
-background:linear-gradient(135deg,#27ae60,#2ecc71);
-color:white;
-border:none;
-padding:10px 20px;
-border-radius:6px;
-cursor:pointer;
-font-weight:500;
-margin-right:10px;
-transition:0.3s;
-}
-
-.change-btn:hover{
-transform:scale(1.05);
-box-shadow:0 6px 15px rgba(0,0,0,0.2);
-}
-
-.cancel-btn{
-background:#e74c3c;
-color:white;
-border:none;
-padding:10px 20px;
-border-radius:6px;
-cursor:pointer;
-font-weight:500;
-transition:0.3s;
-}
-
-.cancel-btn:hover{
-background:#c0392b;
-}
-
-</style>
-
-<div class="password-wrapper">
-
-<div class="password-card">
-
-<div class="password-title">
-Change Password
-</div>
-
-<form action="" method="post">
-
-{% csrf_token %}
-
-<table class="password-table">
-
-<tr>
-<td>Old Password</td>
-<td>
-<input type="password" required name="txt_password" id="txt_password" class="password-input">
-</td>
-</tr>
-
-<tr>
-<td>New Password</td>
-<td>
-<input type="password"
-required
-name="txt_newpassword"
-id="txt_newpassword"
-class="password-input"
-pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters">
-</td>
-</tr>
-
-<tr>
-<td>Re-type Password</td>
-<td>
-<input type="password" required name="txt_repassword" id="txt_repassword" class="password-input">
-</td>
-</tr>
-
-<tr>
-<td colspan="2" class="password-btn-row">
-<input type="submit" value="Change" class="change-btn">
-<input type="submit" value="Cancel" class="cancel-btn">
-</td>
-</tr>
-
-</table>
-
-</form>
-
-</div>
-
+                        <div class="d-grid shadow-lg">
+                            <button type="submit" class="btn btn-primary py-3 rounded-pill fw-bold transform-active transition-all">
+                                <i class="fas fa-key me-2"></i>Apply Credentials
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="bg-white bg-opacity-5 py-4 border-top border-white border-opacity-10 text-center">
+                    <a href="{% url 'Teacher:Myprofile' %}" class="text-muted small text-decoration-none hover-underline"><i class="fas fa-arrow-left me-1"></i> Return to Safety</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% if msg %}
-
 <script>
-alert("{{msg}}")
-window.location="{% url 'Teacher:Myprofile' %}"
+    alert("{{msg}}");
 </script>
-
 {% endif %}
-
 {% endblock %}
