@@ -1,164 +1,60 @@
 {% extends 'Student/Head.html' %}
+{% load static %}
+
 {% block content %}
+<div class="container-fluid py-4">
+    <div class="row pt-5 justify-content-center">
+        <div class="col-lg-5">
+            <!-- Modification Panel -->
+            <div class="card bg-white bg-opacity-5 border border-white border-opacity-10 rounded-4 shadow-lg overflow-hidden animate-fadeIn">
+                <div class="card-body p-5">
+                    <div class="text-center mb-5">
+                        <div class="bg-primary bg-opacity-10 text-primary p-4 rounded-circle d-inline-block shadow-sm">
+                            <i class="fas fa-user-edit fa-3x"></i>
+                        </div>
+                        <h2 class="h3 fw-bold mt-4 mb-2 text-white">Update Academic Credentials</h2>
+                        <p class="text-muted small">Synchronize your personal profile with institutional records</p>
+                    </div>
 
-<style>
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-bold uppercase letter-spacing-1">Full Legal Name</label>
+                            <input type="text" required name="txt_name" id="txt_name" value="{{ student.student_name }}" class="form-control bg-dark border-secondary text-white py-2 shadow-sm" pattern="^[A-Z]+[a-zA-Z ]*$" title="Introductory letter must be a capital.">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-bold uppercase letter-spacing-1">Official Email</label>
+                            <input type="email" required name="txt_email" id="txt_email" value="{{ student.student_email }}" class="form-control bg-dark border-secondary text-white py-2 shadow-sm">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-bold uppercase letter-spacing-1">Primary Contact Number</label>
+                            <input type="text" required name="txt_contact" id="txt_contact" value="{{ student.student_contact }}" class="form-control bg-dark border-secondary text-white py-2 shadow-sm" pattern="[6-9]{1}[0-9]{9}" title="Must be a valid 10-digit mobile sequence.">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-bold uppercase letter-spacing-1">Residential Address</label>
+                            <textarea required name="txt_address" id="txt_address" class="form-control bg-dark border-secondary text-white py-2 shadow-sm" rows="3">{{ student.student_address }}</textarea>
+                        </div>
 
-.editprofile-wrapper{
-display:flex;
-justify-content:center;
-align-items:center;
-padding:40px 0;
-}
-
-.editprofile-card{
-width:500px;
-background:rgba(255,255,255,0.95);
-border-radius:15px;
-box-shadow:0 15px 35px rgba(0,0,0,0.2);
-padding:30px;
-animation:fadeSlide 0.8s ease;
-}
-
-@keyframes fadeSlide{
-from{
-opacity:0;
-transform:translateY(30px);
-}
-to{
-opacity:1;
-transform:translateY(0);
-}
-}
-
-.editprofile-header{
-background:linear-gradient(135deg,#4e73df,#224abe);
-color:white;
-text-align:center;
-padding:12px;
-border-radius:10px;
-font-size:20px;
-font-weight:600;
-margin-bottom:20px;
-}
-
-.editprofile-table{
-width:100%;
-}
-
-.editprofile-table td{
-padding:10px;
-font-weight:500;
-}
-
-.editprofile-input{
-width:100%;
-padding:8px 10px;
-border-radius:8px;
-border:1px solid #ccc;
-transition:0.3s;
-}
-
-.editprofile-input:focus{
-border-color:#4e73df;
-box-shadow:0 0 6px rgba(78,115,223,0.4);
-outline:none;
-}
-
-.editprofile-btn{
-background:#28a745;
-color:white;
-border:none;
-padding:8px 20px;
-border-radius:25px;
-font-weight:500;
-transition:0.3s;
-}
-
-.editprofile-btn:hover{
-background:#218838;
-transform:scale(1.05);
-}
-
-</style>
-
-<div class="editprofile-wrapper">
-
-<div class="editprofile-card">
-
-<div class="editprofile-header">
-<i class="fa fa-user-edit"></i> Edit Profile
-</div>
-
-<form action="" method="post">
-{% csrf_token %}
-
-<table class="editprofile-table">
-
-<tr>
-<td>Name</td>
-<td>
-<input type="text" required name="txt_name" id="txt_name"
-value="{{student.student_name}}"
-class="editprofile-input"
-title="Name Allows Only Alphabets,Spaces and First Letter Must Be Capital Letter"
-pattern="^[A-Z]+[a-zA-Z ]*$">
-</td>
-</tr>
-
-<tr>
-<td>Email</td>
-<td>
-<input type="email" required name="txt_email" id="txt_email"
-value="{{student.student_email}}"
-class="editprofile-input">
-</td>
-</tr>
-
-<tr>
-<td>Contact</td>
-<td>
-<input type="text" required name="txt_contact" id="txt_contact"
-value="{{student.student_contact}}"
-class="editprofile-input"
-pattern="[6-9]{1}[0-9]{9}"
-title="Phone number with 7-9 and remaining 9 digits with 0-9">
-</td>
-</tr>
-
-<tr>
-<td>Address</td>
-<td>
-<input type="text" required name="txt_address" id="txt_address"
-value="{{student.student_address}}"
-class="editprofile-input">
-</td>
-</tr>
-
-<tr>
-<td colspan="2" align="center">
-
-<button type="submit" class="editprofile-btn">
-<i class="fa fa-save"></i> Update
-</button>
-
-</td>
-</tr>
-
-</table>
-
-</form>
-
-</div>
-
+                        <div class="d-grid mt-5">
+                            <button type="submit" class="btn btn-primary py-3 rounded-pill fw-bold transform-active transition-all shadow-lg">
+                                <i class="fas fa-save me-2"></i>Persist Profile Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="bg-white bg-opacity-5 py-3 border-top border-white border-opacity-10 text-center">
+                    <a href="{% url 'Student:Myprofile' %}" class="text-muted small text-decoration-none hover-underline"><i class="fas fa-arrow-left me-1"></i> Return to Portfolio</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% if msg %}
-
 <script>
-alert("{{msg}}")
-window.location="{% url 'Student:Myprofile' %}"
+    alert("{{msg}}");
+    window.location="{% url 'Student:Myprofile' %}";
 </script>
-
 {% endif %}
-
 {% endblock %}

@@ -1,24 +1,10 @@
 from django.db import models
 
 # Create your models here.
-class tbl_district(models.Model):
-    district_name = models.CharField(max_length=50)
-
 class tbl_admin(models.Model):
     admin_name=models.CharField(max_length=15)
     admin_email=models.CharField(max_length=30)
     admin_password=models.CharField(max_length=10)
-
-class tbl_category(models.Model):
-    category_name=models.CharField(max_length=50)
-
-class tbl_place(models.Model):
-    place_name=models.CharField(max_length=50)
-    district = models.ForeignKey(tbl_district,on_delete=models.CASCADE)
-
-class tbl_subcategory(models.Model):
-    subcategory_name=models.CharField(max_length=50)
-    category = models.ForeignKey(tbl_category,on_delete=models.CASCADE)
 
 class tbl_department(models.Model):
     department_name=models.CharField(max_length=50)
@@ -82,3 +68,21 @@ class tbl_purpose(models.Model):
 class tbl_incharge(models.Model):
     teacher = models.ForeignKey(tbl_teacher,on_delete=models.CASCADE)
     purpose = models.ForeignKey(tbl_purpose,on_delete=models.CASCADE)
+
+class tbl_notification(models.Model):
+    notification_title = models.CharField(max_length=200)
+    notification_content = models.TextField()
+    notification_date = models.DateField(auto_now_add=True)
+
+class tbl_specialtimetable(models.Model):
+    date = models.DateField()
+    hour = models.CharField(max_length=5)
+    subject = models.ForeignKey(tbl_subject,on_delete=models.CASCADE)
+    teacher = models.ForeignKey(tbl_teacher,on_delete=models.CASCADE)
+    assignclass = models.ForeignKey(tbl_assignclass,on_delete=models.CASCADE)
+
+class tbl_otp(models.Model):
+    otp_email = models.EmailField()
+    otp_code = models.CharField(max_length=6)
+    otp_time = models.DateTimeField(auto_now_add=True)
+    otp_status = models.IntegerField(default=0)

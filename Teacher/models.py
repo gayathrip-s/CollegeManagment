@@ -45,3 +45,12 @@ class tbl_attendance(models.Model):
     hour = models.CharField(max_length=2)  # 1-5
     status = models.IntegerField(default=0)
 
+class tbl_teacherleave(models.Model):
+    teacher = models.ForeignKey(tbl_teacher,on_delete=models.CASCADE)
+    leave_title = models.CharField(max_length=200)
+    leave_reason = models.TextField()
+    leave_status = models.IntegerField(default=0)
+    leave_date = models.DateField(auto_now_add=True)
+    leave_fromdate = models.DateField(null=True)
+    leave_todate = models.DateField(null=True)
+

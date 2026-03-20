@@ -2,36 +2,14 @@ from django.shortcuts import render,redirect
 from Admin.models import *
 from django.http import JsonResponse
 from Student.models import *
+from django.core.mail import send_mail
+from django.conf import settings
 
 # Create your views here.
 
-def District(request):
-    if "aid" not in request.session:    
-        return redirect("Guest:Login")
-    else:
-        districtdata = tbl_district.objects.all()
-        if request.method=="POST":
-            name=request.POST.get("txt_district")
-            tbl_district.objects.create(district_name=name)
-            #return redirect("Admin:District")
-            return render(request,"Admin/District.html",{'msg':"Data Inserted..."})    
-        else: 
-            return render(request,"Admin/District.html",{'districtdata':districtdata})
-
-def deldistrict(request,did):
-    tbl_district.objects.get(id=did).delete()
-    return render(request,"Admin/District.html",{'msg':"Data Deleted..."})    
-
-def editdistrict(request,eid):
-    editdata = tbl_district.objects.get(id=eid)
-    districtdata = tbl_district.objects.all()
-    if request.method == "POST":
-        name=request.POST.get("txt_district")
-        editdata.district_name = name
-        editdata.save()
-        return render(request,"Admin/District.html",{'msg':"Data Updated..."})    
-    else:
-        return render(request,"Admin/District.html",{'editdata':editdata,'districtdata':districtdata})
+def Logout(request):
+    del request.session['aid']
+    return redirect('Guest:Login')
 
 def AdminReg(request):
     admindata=tbl_admin.objects.all()
@@ -62,97 +40,6 @@ def editadmin(request,eid):
         return render(request,"Admin/AdminRegistration.html",{'msg':"Data Updated..."})
     else:
         return render(request,"Admin/AdminRegistration.html",{'editdata':editdata,'admindata':admindata})
-
-def Category(request):
-    if "aid" not in request.session:    
-        return redirect("Guest:Login")
-    else:
-        categorydata=tbl_category.objects.all()
-        if request.method=="POST":
-            name=request.POST.get("txt_category")
-            tbl_category.objects.create(category_name=name)
-            return render(request,"Admin/Category.html",{'msg':"Data Inserted..."})
-        else:
-            return render(request,"Admin/Category.html",{'categorydata':categorydata})
-
-def delcategory(request,did):
-    tbl_category.objects.get(id=did).delete()
-    return render(request,"Admin/Category.html",{'msg':"Data Deleted..."})
-
-def editcategory(request,eid):
-    editdata=tbl_category.objects.get(id=eid)
-    categorydata=tbl_category.objects.all()
-    if request.method == "POST":
-        name=request.POST.get("txt_category")
-        editdata.category_name=name
-        editdata.save()
-        return render(request,"Admin/Category.html",{'msg':"Data Updated..."})
-    else:
-        return render(request,"Admin/Category.html",{'editdata':editdata,'categorydata':categorydata})
-    
-
-def Place(request):
-    if "aid" not in request.session:    
-        return redirect("Guest:Login")
-    else:
-        placedata=tbl_place.objects.all()
-        districtdata=tbl_district.objects.all()
-        if request.method=="POST":
-            place=request.POST.get("txt_place")
-            district=tbl_district.objects.get(id=request.POST.get("sel_district"))
-            tbl_place.objects.create(place_name=place,district=district)
-            return render(request,"Admin/Place.html",{'msg':"Data Inserted..."})
-        else:
-            return render(request,"Admin/Place.html",{'districtdata':districtdata,'placedata':placedata})
-
-def deleteplace(request,did):
-    tbl_place.objects.get(id=did).delete()
-    return render(request,"Admin/Place.html",{'msg':"Data Deleted..."})
-
-def editplace(request,eid):
-    editdata=tbl_place.objects.get(id=eid)
-    placedata=tbl_place.objects.all()
-    districtdata=tbl_district.objects.all()
-    if request.method == "POST":
-        name=request.POST.get("txt_place")
-        district=tbl_district.objects.get(id=request.POST.get("sel_district"))
-        editdata.place_name=name
-        editdata.district = district
-        editdata.save()
-        return render(request,"Admin/Place.html",{'msg':"Data Updated..."})
-    else:
-        return render(request,"Admin/Place.html",{'editdata':editdata,'placedata':placedata,'districtdata':districtdata})
-
-
-def Subcategory(request):
-    if "aid" not in request.session:    
-        return redirect("Guest:Login")
-    else:
-        subcatdata=tbl_subcategory.objects.all()
-        categorydata=tbl_category.objects.all()
-        if request.method=="POST":
-            subcategory=request.POST.get("txt_subcategory")
-            category=tbl_category.objects.get(id=request.POST.get("sel_category"))
-            tbl_subcategory.objects.create(subcategory_name=subcategory,category=category)
-            return render(request,"Admin/Subcategory.html",{'msg':"Data Inserted..."})
-        else:
-            return render(request,"Admin/Subcategory.html",{'categorydata':categorydata,'subcatdata':subcatdata})
-
-def delsubcategory(request,did):
-    tbl_subcategory.objects.get(id=did).delete()
-    return render(request,"Admin/Subcategory.html",{'msg':"Data Deleted..."})
-
-def editsubcategory(request,eid):
-    editdata=tbl_subcategory.objects.get(id=eid)
-    subcatdata=tbl_subcategory.objects.all()
-    categorydata=tbl_category.objects.all()
-    if request.method == "POST":
-        name=request.POST.get("txt_subcategory")
-        editdata.subcategory_name=name
-        editdata.save()
-        return render(request,"Admin/Subcategory.html",{'msg':"Data Updated..."})
-    else:
-        return render(request,"Admin/Subcategory.html",{'editdata':editdata,'subcatdata':subcatdata,'categorydata':categorydata})
 
 
 def Department(request):
@@ -277,7 +164,32 @@ def Addteacher(request):
             department=tbl_department.objects.get(id=request.POST.get("sel_department"))
             tbl_teacher.objects.create(teacher_name=name,teacher_email=email,teacher_contact=contact,teacher_role=role,
             teacher_gender=gender,teacher_photo=photo,teacher_password=password,department=department)
-            return render(request,"Admin/Addteacher.html",{'msg':"Data Inserted..."})
+            # Send welcome email with login credentials
+            try:
+                send_mail(
+                    subject="🎓 Welcome to EduSphere – Your Faculty Account",
+                    message=(
+                        f"Dear {name},\n\n"
+                        f"Welcome to EduSphere College Portal! Your faculty account has been created successfully.\n\n"
+                        f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+                        f"  YOUR LOGIN CREDENTIALS\n"
+                        f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+                        f"  Portal URL : http://localhost:8000/Guest/Login/\n"
+                        f"  Email      : {email}\n"
+                        f"  Password   : {password}\n"
+                        f"  Role       : {role}\n"
+                        f"  Department : {department.department_name}\n"
+                        f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+                        f"Please login and change your password immediately for security.\n\n"
+                        f"Best Regards,\nEduSphere Administration"
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[email],
+                    fail_silently=True,
+                )
+            except Exception:
+                pass
+            return render(request,"Admin/Addteacher.html",{'msg':"Data Inserted & Credentials Emailed!"})
         else:
             return render(request,"Admin/Addteacher.html",{'departmentdata': departmentdata,'teacherdata':teacherdata})
 
@@ -290,7 +202,9 @@ def Assignclass(request,id):
         Class=tbl_class.objects.get(id=request.POST.get("sel_class"))
         year=tbl_academicyear.objects.get(id=request.POST.get("sel_academicyear"))
         tbl_assignclass.objects.create(Class=Class,academicyear=year,teacher=teacherid)
-        return render(request,"Admin/Addteacher.html",{'msg':"Data Inserted..."})
+        assignclassdata=tbl_assignclass.objects.filter(teacher=teacherid)
+        return render(request,"Admin/Assignclass.html",{'msg':"Data Inserted...",'departmentdata':departmentdata,'academicyeardata':academicyeardata,
+        'assignclassdata':assignclassdata})
     else:
         return render(request,"Admin/Assignclass.html",{'departmentdata':departmentdata,'academicyeardata':academicyeardata,
         'assignclassdata':assignclassdata})
@@ -305,14 +219,18 @@ def Assignsubject(request,id):
         year=tbl_academicyear.objects.get(id=request.POST.get("sel_academicyear"))
         subjectid=tbl_subject.objects.get(id=request.POST.get("sel_subject"))
         tbl_assignsubject.objects.create(academicyear=year,teacher=teacherid,subject=subjectid)
-        return render(request,"Admin/Addteacher.html",{'msg':"Data Inserted..."})
+        assignsubjectdata=tbl_assignsubject.objects.filter(teacher=teacherid)
+        return render(request,"Admin/Assignsubject.html",{'msg':"Data Inserted...",'departmentdata':departmentdata,'academicyeardata':academicyeardata,
+        'semesterdata':semesterdata,'assignsubjectdata':assignsubjectdata})
     else:
         return render(request,"Admin/Assignsubject.html",{'departmentdata':departmentdata,'academicyeardata':academicyeardata,
         'semesterdata':semesterdata,'assignsubjectdata':assignsubjectdata})
     
 def delassignclass(request,did):
-    tbl_assignclass.objects.get(id=did).delete()
-    return render(request,"Admin/Assignclass.html",{'msg':"Data Deleted..."})
+    data = tbl_assignclass.objects.get(id=did)
+    tid = data.teacher.id
+    data.delete()
+    return redirect("Admin:Assignclass",id=tid)
 
 def classsem(request,did):
     assignclassdata=tbl_assignclass.objects.get(id=did)
@@ -321,7 +239,9 @@ def classsem(request,did):
     if request.method=="POST":
         semester=tbl_semester.objects.get(id=request.POST.get("sel_semester"))
         tbl_classsem.objects.create(semester=semester,assignclass=assignclassdata)
-        return render(request,"Admin/Classsem.html",{'msg':"Data Inserted..."})
+        semesterdata=tbl_semester.objects.all()
+        classsemdata=tbl_classsem.objects.filter(assignclass=assignclassdata)
+        return render(request,"Admin/Classsem.html",{'msg':"Data Inserted...",'semesterdata':semesterdata,'classsemdata':classsemdata})
     else:
         return render(request,"Admin/Classsem.html",{'semesterdata':semesterdata,'classsemdata':classsemdata})
     
@@ -333,7 +253,32 @@ def delclasssem(request,did):
 
 
 def Homepage(request):
-    return render(request,"Admin/Homepage.html")
+    if "aid" not in request.session:
+        return redirect("Guest:Login")
+    
+    # Statistics
+    dept_count = tbl_department.objects.count()
+    teacher_count = tbl_teacher.objects.count()
+    student_count = tbl_student.objects.count()
+    subject_count = tbl_subject.objects.count()
+    
+    # Pending Actions
+    pending_leaves = tbl_teacherleave.objects.filter(leave_status=0).order_by('-id')[:5]
+    pending_complaints = tbl_complaint.objects.filter(com_status=0).order_by('-id')[:5]
+    
+    leave_count = tbl_teacherleave.objects.filter(leave_status=0).count()
+    complaint_count = tbl_complaint.objects.filter(com_status=0).count()
+
+    return render(request, "Admin/Homepage.html", {
+        'dept_count': dept_count,
+        'teacher_count': teacher_count,
+        'student_count': student_count,
+        'subject_count': subject_count,
+        'pending_leaves': pending_leaves,
+        'pending_complaints': pending_complaints,
+        'leave_count': leave_count,
+        'complaint_count': complaint_count,
+    })
 
 def Ajaxcourse(request):
     dep=tbl_department.objects.get(id=request.GET.get('disid'))
@@ -490,7 +435,65 @@ def Assignincharge(request,id):
     if request.method=="POST":
         purposeid=tbl_purpose.objects.get(id=request.POST.get("sel_purpose"))
         tbl_incharge.objects.create(teacher=teacherid,purpose=purposeid)
-        return render(request,"Admin/Addteacher.html",{'msg':"Data Inserted..."})
+        return redirect("Admin:Addteacher")
     else:
         return render(request,"Admin/Assignincharge.html",{'purposedata':purposedata})
+
+def Notification(request):
+    notifications = tbl_notification.objects.all().order_by('-id')
+    if request.method == "POST":
+        title = request.POST.get("txt_title")
+        content = request.POST.get("txt_content")
+        tbl_notification.objects.create(notification_title=title, notification_content=content)
+        return render(request, "Admin/Notification.html", {'msg': "Notification Posted", 'notifications': notifications})
+    return render(request, "Admin/Notification.html", {'notifications': notifications})
+
+def delnotification(request, did):
+    tbl_notification.objects.get(id=did).delete()
+    return redirect("Admin:Notification")
+
+def AdminViewTeacherLeave(request):
+    leavedata = tbl_teacherleave.objects.all().order_by('-id')
+    return render(request, "Admin/ViewTeacherLeave.html", {'leavedata': leavedata})
+
+def AcceptTeacherLeave(request, aid):
+    leave = tbl_teacherleave.objects.get(id=aid)
+    leave.leave_status = 1
+    leave.save()
+    return redirect("Admin:AdminViewTeacherLeave")
+
+def RejectTeacherLeave(request, rid):
+    leave = tbl_teacherleave.objects.get(id=rid)
+    leave.leave_status = 2
+    leave.save()
+    return redirect("Admin:AdminViewTeacherLeave")
+
+def SpecialTimetable(request):
+    classes = tbl_assignclass.objects.all()
+    teachers = tbl_teacher.objects.all()
+    subjects = tbl_subject.objects.all()
+    special_timetable = tbl_specialtimetable.objects.all().order_by('-date')
+
+    if request.method == "POST":
+        date = request.POST.get("txt_date")
+        hour = request.POST.get("sel_hour")
+        teacher = tbl_teacher.objects.get(id=request.POST.get("sel_teacher"))
+        subject = tbl_subject.objects.get(id=request.POST.get("sel_subject"))
+        assignclass = tbl_assignclass.objects.get(id=request.POST.get("sel_class"))
+        
+        tbl_specialtimetable.objects.create(
+            date=date, hour=hour, teacher=teacher, subject=subject, assignclass=assignclass
+        )
+        return render(request, "Admin/SpecialTimetable.html", {
+            'msg': "Special Timetable set",
+            'classes': classes, 'teachers': teachers, 'subjects': subjects, 'special_timetable': special_timetable, 'hours': HOURS
+        })
+    
+    return render(request, "Admin/SpecialTimetable.html", {
+        'classes': classes, 'teachers': teachers, 'subjects': subjects, 'special_timetable': special_timetable, 'hours': HOURS
+    })
+
+def delspecialtimetable(request, did):
+    tbl_specialtimetable.objects.get(id=did).delete()
+    return redirect("Admin:SpecialTimetable")
     

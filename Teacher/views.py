@@ -3,6 +3,8 @@ from Admin.models import *
 from Teacher.models import *
 from Student.models import *
 from django.utils import timezone
+from django.core.mail import send_mail
+from django.conf import settings
 
 # Create your views here.
 def Homepage(request):
@@ -28,12 +30,15 @@ def Homepage(request):
         })
     teacher = tbl_teacher.objects.get(id=request.session['tid'])
     assign=tbl_assignment.objects.filter(teacher=teacher).order_by('-id')[:5]
-    return render(request,"Teacher/Homepage.html",{'student_count':sc,'assignment_count':ac,'leave_count':lc,'assignment_submission_count':asup,'data':data,'teacher':teacher,'assign':assign})
+    notifications = tbl_notification.objects.all().order_by('-id')[:5]
+    return render(request,"Teacher/Homepage.html",{'student_count':sc,'assignment_count':ac,'leave_count':lc,'assignment_submission_count':asup,'data':data,'teacher':teacher,'assign':assign, 'notifications': notifications})
 
 
 def Myprofile(request):
   teacherdata = tbl_teacher.objects.get(id=request.session['tid'])
-  return render(request,"Teacher/Myprofile.html",{'teacher':teacherdata})
+  assignclass = tbl_assignclass.objects.filter(teacher=teacherdata).first()
+  incharge = tbl_incharge.objects.filter(teacher=teacherdata)
+  return render(request,"Teacher/Myprofile.html",{'teacher':teacherdata, 'assignclass': assignclass, 'incharge': incharge})
 
 def Editprofile(request):
   teacherdata = tbl_teacher.objects.get(id=request.session['tid'])
@@ -70,11 +75,14 @@ def Changepass(request):
     return render(request,"Teacher/Changepass.html")
 
 def Addstudent(request):
-    teacher=tbl_teacher.objects.get(id=request.session['tid'])
+    teacher = tbl_teacher.objects.get(id=request.session['tid'])
     assignclid = tbl_assignclass.objects.filter(teacher=teacher).last()
-    studentdata=tbl_student.objects.filter(assignclass=assignclid)
-
-    if request.method=="POST":
+    is_ct = assignclid is not None
+    
+    if request.method == "POST":
+        if not is_ct:
+             return render(request,"Teacher/Addstudent.html",{'msg':"Access Denied: Not a Class Teacher",'is_class_teacher': is_ct})
+        
         name=request.POST.get("txt_name")
         email=request.POST.get("txt_email")
         contact=request.POST.get("txt_contact")
@@ -84,11 +92,43 @@ def Addstudent(request):
         regno = request.POST.get("txt_number")
         dob=request.POST.get("txt_date")
         password=request.POST.get("txt_password")
-        tbl_student.objects.create(student_name=name,student_email=email,student_contact=contact,student_address=address,
-        student_photo=photo,student_gender=gender,student_dob=dob,student_password=password,assignclass=assignclid,student_registernumber=regno)
-        return render(request,"Teacher/Addstudent.html",{'msg':"Data Inserted..."})
+        
+        tbl_student.objects.create(
+            student_name=name, student_email=email, student_contact=contact, 
+            student_address=address, student_photo=photo, student_gender=gender, 
+            student_dob=dob, student_password=password, assignclass=assignclid, 
+            student_registernumber=regno
+        )
+        # Send welcome email with login credentials
+        try:
+            send_mail(
+                subject="🎓 Welcome to EduSphere – Your Student Account",
+                message=(
+                    f"Dear {name},\n\n"
+                    f"Welcome to EduSphere College Portal! Your student account has been created.\n\n"
+                    f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+                    f"  YOUR LOGIN CREDENTIALS\n"
+                    f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+                    f"  Portal URL      : http://localhost:8000/Guest/Login/\n"
+                    f"  Email           : {email}\n"
+                    f"  Password        : {password}\n"
+                    f"  Register Number : {regno}\n"
+                    f"  Class           : {assignclid.Class.class_name}\n"
+                    f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+                    f"Please login and change your password immediately for security.\n\n"
+                    f"Best Regards,\nEduSphere Administration"
+                ),
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                fail_silently=True,
+            )
+        except Exception:
+            pass
+        studentdata = tbl_student.objects.filter(assignclass=assignclid)
+        return render(request, "Teacher/Addstudent.html", {'msg': "Student Added & Credentials Emailed!", 'studentdata': studentdata, 'is_class_teacher': is_ct})
     else:
-        return render(request,"Teacher/Addstudent.html",{'studentdata':studentdata})
+        studentdata = tbl_student.objects.filter(assignclass=assignclid) if is_ct else []
+        return render(request, "Teacher/Addstudent.html", {'studentdata': studentdata, 'is_class_teacher': is_ct})
 
 def delstudent(request,did):
     tbl_student.objects.get(id=did).delete()
@@ -141,7 +181,7 @@ def Assignment(request):
   
 
 def delassignment(request,did):
-    tbl_notes.objects.get(id=did).delete()
+    tbl_assignment.objects.get(id=did).delete()
     return render(request,"Teacher/Assignment.html",{'msg':"Data Deleted..."})
 
 def Viewuploads(request,aid):
@@ -160,15 +200,23 @@ def Addmark(request,aid):
       return render(request,"Teacher/Addmark.html")
 
 def Viewstudents(request):
-  semesterdata=tbl_semester.objects.all()
-  coursedata=tbl_course.objects.all()
+  teacher = tbl_teacher.objects.get(id=request.session['tid'])
+  assignclid = tbl_assignclass.objects.filter(teacher=teacher).last()
+  is_ct = assignclid is not None
+  
+  if not is_ct:
+      return render(request, "Teacher/Viewstudents.html", {'msg': "Access Denied: Only Class Teachers can view global student data", 'is_class_teacher': False})
+
+  semesterdata = tbl_semester.objects.all()
+  coursedata = tbl_course.objects.filter(id=assignclid.Class.course.id)
+  
   if request.method == "POST":
-    course = request.POST.get("sel_course")
     semester = request.POST.get("sel_semester")
-    studentdata=tbl_student.objects.filter(assignclass__Class__course=course,assignclass__tbl_classsem__semester=semester)
-    return render(request,"Teacher/Viewstudents.html",{'semesterdata':semesterdata,'coursedata':coursedata,'studentdata':studentdata})
+    studentdata = tbl_student.objects.filter(assignclass=assignclid)
+    return render(request, "Teacher/Viewstudents.html", {'semesterdata': semesterdata, 'coursedata': coursedata, 'studentdata': studentdata, 'is_class_teacher': True})
   else:
-    return render(request,"Teacher/Viewstudents.html",{'semesterdata':semesterdata,'coursedata':coursedata})
+    studentdata = tbl_student.objects.filter(assignclass=assignclid)
+    return render(request, "Teacher/Viewstudents.html", {'semesterdata': semesterdata, 'coursedata': coursedata, 'studentdata': studentdata, 'is_class_teacher': True})
   
 def Addinternalmark(request,aid):
    semesterdata=tbl_semester.objects.all()
@@ -195,19 +243,23 @@ HOURS = [
 
 def ViewTimeTable(request):
     teacher = tbl_teacher.objects.get(id=request.session["tid"])
-    print(teacher)
     academicyear = tbl_academicyear.objects.order_by('-id').first()
-    print(academicyear)
+    today = timezone.now().date()
+    
     timetable = tbl_timetable.objects.none()
     if academicyear:
         timetable = tbl_timetable.objects.filter(
             teacher_id=teacher,
             academicyear=academicyear
         )
-        print(timetable)
+    
+    special_timetable = tbl_specialtimetable.objects.filter(teacher=teacher, date=today)
+
     return render(request, "Teacher/ViewTimeTable.html", {
         "teacher": teacher,
         "timetable": timetable,
+        "special_timetable": special_timetable,
+        "today_date": today,
         "days": DAYS,
         "hours": HOURS,
         "academicyear": academicyear
@@ -380,9 +432,17 @@ def updateattendance(request):
     return redirect(request.META.get('HTTP_REFERER'))
 
 def viewleave(request):
+    teacher = tbl_teacher.objects.get(id=request.session['tid'])
+    
+    # Teachers can oversee student leaves of their assigned classes
+    leavedata = tbl_leave.objects.filter(student__assignclass__teacher=teacher)
+    
+    # HOD override: HODs can perceive all leaves in their department
+    if teacher.teacher_role == 'HOD':
+        dept_leaves = tbl_leave.objects.filter(student__assignclass__Class__course__department=teacher.department)
+        leavedata = (leavedata | dept_leaves).distinct()
 
-    leavedata = tbl_leave.objects.filter(student__assignclass__teacher=request.session['tid'])
-    return render(request,"Teacher/Viewleave.html",{'leavedata':leavedata})
+    return render(request, "Teacher/Viewleave.html", {'leavedata': leavedata.order_by('-id')})
 
 def accept(request,aid):
     leave = tbl_leave.objects.get(id=aid)
@@ -405,9 +465,14 @@ def viewdutyleave(request):
     dutyleavedata = tbl_dutyleave.objects.filter(
         purpose__in=assigned_purposes
     )
+    
+    # HODs can also oversee all duty leaves in their department
+    if teacher.teacher_role == 'HOD':
+        dept_duty = tbl_dutyleave.objects.filter(student__assignclass__Class__course__department=teacher.department)
+        dutyleavedata = (dutyleavedata | dept_duty).distinct()
 
     return render(request, "Teacher/Viewdutyleave.html", {
-        'dutyleavedata': dutyleavedata
+        'dutyleavedata': dutyleavedata.order_by('-id')
     })
 
 def acceptduty(request,aid):
@@ -426,4 +491,23 @@ def myassignedsubject(request):
     teacher = tbl_teacher.objects.get(id=request.session['tid'])
     assignsubject = tbl_assignsubject.objects.filter(teacher=teacher)
     return render(request, "Teacher/MyAssignedSubjects.html", {'assignsubject': assignsubject})
+
+def ApplyLeave(request):
+    teacher = tbl_teacher.objects.get(id=request.session['tid'])
+    leavedata = tbl_teacherleave.objects.filter(teacher=teacher).order_by('-id')
+    if request.method == "POST":
+        title = request.POST.get("txt_title")
+        reason = request.POST.get("txt_reason")
+        fromdate = request.POST.get("txt_fromdate")
+        todate = request.POST.get("txt_todate")
+        tbl_teacherleave.objects.create(
+            teacher=teacher, leave_title=title, leave_reason=reason,
+            leave_fromdate=fromdate, leave_todate=todate
+        )
+        return render(request, "Teacher/ApplyLeave.html", {'msg': "Leave Applied Successfully", 'leavedata': leavedata})
+    return render(request, "Teacher/ApplyLeave.html", {'leavedata': leavedata})
+
+def delteacherleave(request, did):
+    tbl_teacherleave.objects.get(id=did).delete()
+    return redirect("Teacher:ApplyLeave")
    

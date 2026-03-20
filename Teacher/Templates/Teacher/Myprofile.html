@@ -1,131 +1,76 @@
-{% extends 'Teacher/Header.html' %}
+{% extends 'Teacher/Head.html' %}
+{% load static %}
+
 {% block content %}
+<div class="container py-5">
+    <div class="row pt-5 justify-content-center">
+        <div class="col-lg-5">
+            <!-- Profile Identity Card -->
+            <div class="card bg-white bg-opacity-5 border border-white border-opacity-10 rounded-4 shadow-lg overflow-hidden animate-fadeIn">
+                 <!-- Aesthetic Background Accent -->
+                <div class="bg-primary bg-opacity-10 py-5 text-center position-relative">
+                    <div class="rounded-circle border border-4 border-dark d-inline-block overflow-hidden shadow-lg" style="width: 150px; height: 150px; background: #1e293b;">
+                        <img src="{{ teacher.teacher_photo.url }}" class="w-100 h-100 object-fit-cover" alt="Profile">
+                    </div>
+                </div>
 
-<style>
+                <div class="card-body p-5 pt-4 text-center">
+                    <h2 class="h3 fw-bold mb-1 text-white">{{ teacher.teacher_name }}</h2>
+                    <p class="text-primary small fw-bold uppercase letter-spacing-1 mb-4">{{ teacher.teacher_role }} | {{ teacher.department.department_name }}</p>
+                    
+                    <hr class="border-white border-opacity-10 my-4">
 
-.profile-wrapper{
-display:flex;
-justify-content:center;
-align-items:center;
-padding:50px;
-}
+                    <div class="row g-4 text-start mb-4">
+                        <div class="col-12">
+                            <label class="form-label text-muted smaller fw-bold uppercase letter-spacing-1 d-block mb-1">Assigned Academic Class</label>
+                            <div class="d-flex align-items-center gap-3 p-3 rounded-4 bg-white bg-opacity-5 border border-white border-opacity-5">
+                                <i class="fas fa-chalkboard text-warning opacity-50"></i>
+                                <span class="small fw-medium">{% if assignclass %}{{ assignclass.Class.class_name }}{% else %}General Faculty{% endif %}</span>
+                            </div>
+                        </div>
+                        {% if incharge %}
+                        <div class="col-12">
+                            <label class="form-label text-muted smaller fw-bold uppercase letter-spacing-1 d-block mb-1">Designated Responsibilities</label>
+                            <div class="d-flex flex-wrap gap-2 p-3 rounded-4 bg-white bg-opacity-5 border border-white border-opacity-5">
+                                {% for inc in incharge %}
+                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill smaller fw-bold">
+                                    <i class="fas fa-certificate me-1"></i> {{ inc.purpose.purpose_name }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="col-12">
+                            <label class="form-label text-muted smaller fw-bold uppercase letter-spacing-1 d-block mb-1">Official Communications</label>
+                            <div class="d-flex align-items-center gap-3 p-3 rounded-4 bg-white bg-opacity-5 border border-white border-opacity-5">
+                                <i class="fas fa-envelope text-primary opacity-50"></i>
+                                <span class="small fw-medium">{{ teacher.teacher_email }}</span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-muted smaller fw-bold uppercase letter-spacing-1 d-block mb-1">Primary Contact</label>
+                            <div class="d-flex align-items-center gap-3 p-3 rounded-4 bg-white bg-opacity-5 border border-white border-opacity-5">
+                                <i class="fas fa-phone-alt text-success opacity-50"></i>
+                                <span class="small fw-medium">{{ teacher.teacher_contact }}</span>
+                            </div>
+                        </div>
+                    </div>
 
-.profile-card{
-width:420px;
-background:white;
-border-radius:16px;
-box-shadow:0 15px 35px rgba(0,0,0,0.15);
-padding:30px;
-text-align:center;
-animation:fadeUp 0.6s ease;
-}
-
-@keyframes fadeUp{
-from{opacity:0;transform:translateY(20px);}
-to{opacity:1;transform:translateY(0);}
-}
-
-.profile-img{
-width:130px;
-height:130px;
-border-radius:50%;
-object-fit:cover;
-border:4px solid #3498db;
-margin-bottom:15px;
-}
-
-.profile-name{
-font-size:22px;
-font-weight:600;
-color:#2c3e50;
-margin-bottom:20px;
-}
-
-.profile-table{
-width:100%;
-border-collapse:collapse;
-margin-bottom:20px;
-}
-
-.profile-table td{
-padding:10px;
-border-bottom:1px solid #eee;
-text-align:left;
-}
-
-.profile-label{
-font-weight:600;
-color:#555;
-}
-
-.profile-actions{
-display:flex;
-justify-content:center;
-gap:15px;
-}
-
-.profile-btn{
-text-decoration:none;
-padding:9px 16px;
-border-radius:6px;
-font-size:14px;
-color:white;
-transition:0.3s;
-}
-
-.edit-btn{
-background:#3498db;
-}
-
-.password-btn{
-background:#e67e22;
-}
-
-.profile-btn:hover{
-transform:scale(1.05);
-box-shadow:0 5px 15px rgba(0,0,0,0.2);
-}
-
-</style>
-
-<div class="profile-wrapper">
-
-<div class="profile-card">
-
-<img src="{{teacher.teacher_photo.url}}" class="profile-img">
-
-<div class="profile-name">
-{{teacher.teacher_name}}
+                    <div class="d-flex gap-3 justify-content-center">
+                        <a href="{% url 'Teacher:Editprofile' %}" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm fw-bold">
+                            <i class="fas fa-user-edit me-2"></i>Update Profile
+                        </a>
+                        <a href="{% url 'Teacher:Changepass' %}" class="btn btn-outline-secondary px-4 py-2 rounded-pill fw-bold">
+                            <i class="fas fa-key me-2"></i>Credentials
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="bg-white bg-opacity-5 py-3 border-top border-white border-opacity-5 text-center">
+                    <span class="text-muted smaller opacity-50 uppercase letter-spacing-1">Faculty ID: #TC{{ teacher.id|stringformat:"04d" }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-<table class="profile-table">
-
-<tr>
-<td class="profile-label">Email</td>
-<td>{{teacher.teacher_email}}</td>
-</tr>
-
-<tr>
-<td class="profile-label">Contact</td>
-<td>{{teacher.teacher_contact}}</td>
-</tr>
-
-</table>
-
-<div class="profile-actions">
-
-<a href="{% url 'Teacher:Editprofile' %}" class="profile-btn edit-btn">
-Edit Profile
-</a>
-
-<a href="{% url 'Teacher:Changepass' %}" class="profile-btn password-btn">
-Change Password
-</a>
-
-</div>
-
-</div>
-
-</div>
-
 {% endblock %}

@@ -1,305 +1,142 @@
-{% extends 'Teacher/Header.html' %}
+{% extends 'Teacher/Head.html' %}
+{% load static %}
+
 {% block content %}
+<div class="container-fluid py-4">
+    <div class="row pt-4 justify-content-center">
+        <div class="col-lg-11">
+            <!-- Header Section -->
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div>
+                    <h2 class="h3 fw-bold mb-1">Resource Repository</h2>
+                    <p class="text-muted small mb-0">Upload and manage lecture notes, clinical guides, and study materials</p>
+                </div>
+                <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle">
+                    <i class="fas fa-file-alt fa-2x"></i>
+                </div>
+            </div>
 
-<style>
+            <div class="row g-4">
+                 <!-- Form Col -->
+                <div class="col-xl-4">
+                    <div class="card bg-white bg-opacity-5 border border-white border-opacity-10 rounded-4 shadow-sm h-100 animate-slideIn">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-4">Publish Material</h5>
+                            <form action="" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small fw-bold uppercase">Target Course</label>
+                                    <select name="sel_course" id="sel_course" class="form-select bg-dark border-secondary text-white py-2" required>
+                                        <option value="">-- Choose Course --</option>
+                                        {% for i in coursedata %}
+                                        <option value="{{i.id}}">{{i.course_name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small fw-bold uppercase">Semester</label>
+                                    <select name="sel_semester" id="sel_semester" class="form-select bg-dark border-secondary text-white py-2" required>
+                                        <option value="">-- Choose Sem --</option>
+                                        {% for i in semesterdata %}
+                                        <option value="{{i.id}}">{{i.semester_name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small fw-bold uppercase">Specific Subject</label>
+                                    <select name="sel_subject" id="sel_subject" class="form-select bg-dark border-secondary text-white py-2" required>
+                                        <option value="">-- Select Subject --</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small fw-bold uppercase">File Upload</label>
+                                    <input type="file" name="file_note" class="form-control bg-dark border-secondary text-white" required>
+                                    <div class="smaller text-muted mt-2 opacity-50">Upload PDF, DOCX or PPT (Max 15MB)</div>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label text-muted small fw-bold uppercase">Brief Synopsis</label>
+                                    <input type="text" name="txt_content" class="form-control bg-dark border-secondary text-white py-2" placeholder="Topic details..." required>
+                                </div>
+                                <div class="d-grid mt-5">
+                                    <button type="submit" class="btn btn-primary py-2 rounded-pill shadow-sm fw-bold">
+                                        <i class="fas fa-cloud-upload-alt me-2"></i>Post Material
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
-.notes-main-wrapper{
-display:flex;
-flex-direction:column;
-align-items:center;
-padding:40px;
-gap:30px;
-}
-
-.notes-form-card{
-width:600px;
-background:white;
-border-radius:12px;
-box-shadow:0 12px 30px rgba(0,0,0,0.15);
-padding:25px;
-animation:fadeUp 0.5s ease;
-}
-
-@keyframes fadeUp{
-from{
-opacity:0;
-transform:translateY(20px);
-}
-to{
-opacity:1;
-transform:translateY(0);
-}
-}
-
-.notes-title{
-text-align:center;
-font-size:24px;
-font-weight:600;
-margin-bottom:20px;
-color:#2c3e50;
-}
-
-.notes-form-table{
-width:100%;
-border-collapse:collapse;
-}
-
-.notes-form-table td{
-padding:10px;
-}
-
-.notes-select,
-.notes-input{
-width:100%;
-padding:8px;
-border-radius:6px;
-border:1px solid #ccc;
-transition:0.3s;
-}
-
-.notes-select:focus,
-.notes-input:focus{
-outline:none;
-border-color:#3498db;
-box-shadow:0 0 5px rgba(52,152,219,0.4);
-}
-
-.notes-submit-row{
-text-align:center;
-}
-
-.notes-submit-btn{
-background:#3498db;
-color:white;
-border:none;
-padding:9px 20px;
-border-radius:6px;
-cursor:pointer;
-transition:0.3s;
-}
-
-.notes-submit-btn:hover{
-background:#2c80b4;
-transform:scale(1.05);
-}
-
-.notes-table-card{
-width:90%;
-background:white;
-border-radius:12px;
-box-shadow:0 10px 25px rgba(0,0,0,0.15);
-padding:20px;
-}
-
-.notes-table{
-width:100%;
-border-collapse:collapse;
-text-align:center;
-}
-
-.notes-table th{
-background:#f4f6f9;
-padding:12px;
-}
-
-.notes-table td{
-padding:10px;
-border-bottom:1px solid #ddd;
-}
-
-.notes-table tr:hover{
-background:#fafafa;
-}
-
-.view-file-btn{
-background:#1abc9c;
-color:white;
-padding:5px 12px;
-border-radius:4px;
-text-decoration:none;
-font-size:13px;
-}
-
-.view-file-btn:hover{
-background:#16a085;
-}
-
-.delete-btn{
-background:#e74c3c;
-color:white;
-padding:5px 12px;
-border-radius:4px;
-text-decoration:none;
-font-size:13px;
-}
-
-.delete-btn:hover{
-background:#c0392b;
-}
-
-</style>
-
-<div class="notes-main-wrapper">
-
-<div class="notes-form-card">
-
-<div class="notes-title">
-Add Notes
-</div>
-
-<form action="" method="post" enctype="multipart/form-data">
-
-{% csrf_token %}
-
-<table class="notes-form-table">
-
-<tr>
-<td>Course</td>
-<td>
-<select name="sel_course" id="sel_course" class="notes-select" required>
-<option value="">---select---</option>
-
-{% for i in coursedata %}
-
-<option value="{{i.id}}">{{i.course_name}}</option>
-{% endfor %}
-
-</select>
-</td>
-</tr>
-
-<tr>
-<td>Semester</td>
-<td>
-<select name="sel_semester" id="sel_semester" class="notes-select" required>
-<option value="">---select---</option>
-
-{% for i in semesterdata %}
-
-<option value="{{i.id}}">{{i.semester_name}}</option>
-{% endfor %}
-
-</select>
-</td>
-</tr>
-
-<tr>
-<td>Subject</td>
-<td>
-<select name="sel_subject" id="sel_subject" class="notes-select" required>
-<option value="">---select---</option>
-</select>
-</td>
-</tr>
-
-<tr>
-<td>File</td>
-<td>
-<input type="file" name="file_note" id="file_note" class="notes-input" required>
-</td>
-</tr>
-
-<tr>
-<td>Content</td>
-<td>
-<input type="text" name="txt_content" id="txt_content" class="notes-input" required>
-</td>
-</tr>
-
-<tr>
-<td colspan="2" class="notes-submit-row">
-<input type="submit" value="Submit" class="notes-submit-btn">
-</td>
-</tr>
-
-</table>
-
-</form>
-
-</div>
-
-<div class="notes-table-card">
-
-<table class="notes-table">
-
-<tr>
-<th>SlNo</th>
-<th>Course</th>
-<th>Semester</th>
-<th>Subject</th>
-<th>File</th>
-<th>Content</th>
-<th>Action</th>
-</tr>
-
-{% for i in addnotesdata %}
-
-<tr>
-
-<td>{{ forloop.counter }}</td>
-
-<td>{{ i.subject.course.course_name }}</td>
-
-<td>{{ i.subject.semester.semester_name }}</td>
-
-<td>{{ i.subject.subject_name }}</td>
-
-<td>
-<a href="{{ i.notes_file.url }}" class="view-file-btn">
-View File
-</a>
-</td>
-
-<td>{{ i.notes_content }}</td>
-
-<td>
-<a href="{% url 'Teacher:delnotes' i.id %}" class="delete-btn">
-Delete
-</a>
-</td>
-
-</tr>
-
-{% endfor %}
-
-</table>
-
-</div>
-
+                <!-- History Col -->
+                <div class="col-xl-8">
+                    <div class="card bg-white bg-opacity-5 border border-white border-opacity-10 rounded-4 shadow-sm overflow-hidden h-100 animate-fadeIn">
+                        <div class="card-header bg-white bg-opacity-5 py-3 px-4 border-0">
+                            <h5 class="mb-0 fw-bold small text-muted uppercase letter-spacing-1">Published Resources</h5>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover mb-0 align-middle">
+                                <thead class="bg-white bg-opacity-5 border-0">
+                                    <tr>
+                                        <th class="px-4 py-3 border-0 small text-muted uppercase">Subject & Program</th>
+                                        <th class="px-4 py-3 border-0 small text-muted uppercase">Synopsis</th>
+                                        <th class="px-4 py-3 border-0 small text-muted uppercase text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for i in addnotesdata %}
+                                    <tr class="border-white border-opacity-5">
+                                        <td class="px-4 py-3">
+                                            <div class="fw-bold">{{ i.subject.subject_name }}</div>
+                                            <div class="smaller text-muted opacity-50">{{ i.subject.course.course_name }} | Sem {{ i.subject.semester.semester_name }}</div>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <div class="small fw-medium">{{ i.notes_content }}</div>
+                                        </td>
+                                        <td class="px-4 py-3 text-end">
+                                            <div class="d-flex justify-content-end gap-2">
+                                                <a href="{{ i.notes_file.url }}" class="btn btn-sm btn-outline-info rounded-pill px-3" target="_blank">
+                                                    <i class="fas fa-eye me-1"></i> View
+                                                </a>
+                                                <a href="{% url 'Teacher:delnotes' i.id %}" class="btn btn-sm btn-outline-danger border-0 rounded-circle" onclick="return confirm('Archive this Resource?')">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="text-center py-5 text-muted opacity-50">No resources published to Repository.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
 <script>
-
 $("#sel_semester").change(function(){
-
-var semId=$(this).val();
-var courseId=document.getElementById("sel_course").value;
-
-var ur="{% url 'Teacher:Ajaxassignsubject' %}";
-
-$.ajax({
-url:ur,
-data:{semId:semId,courseId:courseId},
-success:function(data){
-
-$("#sel_subject").html(data);
-
-},
+    var semId = $(this).val();
+    var courseId = document.getElementById("sel_course").value;
+    var ur = "{% url 'Teacher:Ajaxassignsubject' %}";
+    $.ajax({
+        url: ur,
+        data: {semId: semId, courseId: courseId},
+        success: function(data){
+            $("#sel_subject").html(data);
+        },
+    });
 });
-
-});
-
 </script>
 
 {% if msg %}
-
 <script>
-alert("{{msg}}")
-window.location="{% url 'Teacher:Addnotes' %}"
+    alert("{{msg}}");
 </script>
-
 {% endif %}
-
 {% endblock %}

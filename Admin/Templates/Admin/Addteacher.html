@@ -1,290 +1,148 @@
-{% extends 'Admin/Header.html' %}
+{% extends 'Admin/Head.html' %}
+{% load static %}
 
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Add Teacher</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<div class="container-fluid py-4">
+    <div class="row pt-4 justify-content-center">
+        <div class="col-lg-12">
+            <!-- Header Section -->
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div>
+                    <h2 class="h3 fw-bold mb-1">Faculty Registration</h2>
+                    <p class="text-muted small mb-0">Onboard new teaching staff and professional faculty members</p>
+                </div>
+                <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle">
+                    <i class="fas fa-chalkboard-teacher fa-2x"></i>
+                </div>
+            </div>
 
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+            <!-- Registration Form Card -->
+            <div class="card bg-white bg-opacity-5 border border-white border-opacity-10 rounded-4 shadow-sm mb-5 animate-slideIn">
+                <div class="card-body p-4">
+                    <form action="" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <label class="form-label text-muted small fw-bold uppercase">Full Name</label>
+                                <input type="text" name="txt_name" class="form-control bg-dark border-secondary text-white py-2" required placeholder="Dr. Jane Doe" pattern="^[A-Z]+[a-zA-Z ]*$" title="Start with Capital">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-muted small fw-bold uppercase">Official Email</label>
+                                <input type="email" name="txt_email" class="form-control bg-dark border-secondary text-white py-2" required placeholder="doe.j@college.edu">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-muted small fw-bold uppercase">Contact Number</label>
+                                <input type="text" name="txt_contact" class="form-control bg-dark border-secondary text-white py-2" required placeholder="Phone" pattern="[6-9]{1}[0-9]{9}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-muted small fw-bold uppercase">Academic Role</label>
+                                <select name="txt_role" class="form-select bg-dark border-secondary text-white py-2" required>
+                                    <option value="Staff">Assistant Professor</option>
+                                    <option value="HOD">Head of Department</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-muted small fw-bold uppercase">Department</label>
+                                <select name="sel_department" class="form-select bg-dark border-secondary text-white py-2" required>
+                                    <option value="">-- Select --</option>
+                                    {% for i in departmentdata %}
+                                    <option value="{{i.id}}">{{i.department_name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                             <div class="col-md-3">
+                                <label class="form-label text-muted small fw-bold uppercase">Profile Picture</label>
+                                <input type="file" name="file_photo" class="form-control bg-dark border-secondary text-white" accept="image/*" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-muted small fw-bold uppercase">Initial Password</label>
+                                <input type="password" name="txt_password" class="form-control bg-dark border-secondary text-white py-2" required placeholder="********" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-muted small fw-bold uppercase">Gender</label>
+                                <div class="d-flex gap-4 mt-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="txt_gender" value="Male" id="m" checked>
+                                        <label class="form-check-label text-muted small" for="m">Male</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="txt_gender" value="Female" id="f">
+                                        <label class="form-check-label text-muted small" for="f">Female</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 text-end mt-4">
+                                <button type="reset" class="btn btn-outline-secondary px-4 me-2 rounded-pill">Reset</button>
+                                <button type="submit" class="btn btn-primary px-5 rounded-pill shadow-sm">
+                                    <i class="fas fa-user-plus me-2"></i>Register Faculty
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
-    <style>
-        body{
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg,#667eea,#764ba2);
-            margin:0;
-            padding:30px;
-        }
-
-        .main-container{
-            max-width:1200px;
-            margin:auto;
-        }
-
-        .card{
-            background:white;
-            border-radius:15px;
-            box-shadow:0 10px 30px rgba(0,0,0,0.2);
-            padding:30px;
-            margin-bottom:40px;
-        }
-
-        h2{
-            text-align:center;
-            margin-bottom:25px;
-            color:#333;
-        }
-
-        .form-table{
-            width:100%;
-        }
-
-        .form-table td{
-            padding:12px;
-        }
-
-        .form-table input[type="text"],
-        .form-table input[type="email"],
-        .form-table input[type="password"],
-        .form-table input[type="file"],
-        .form-table select{
-            width:100%;
-            padding:10px;
-            border-radius:8px;
-            border:1px solid #ccc;
-            transition:0.3s;
-        }
-
-        .form-table input:focus,
-        .form-table select:focus{
-            border-color:#667eea;
-            box-shadow:0 0 5px rgba(102,126,234,0.5);
-            outline:none;
-        }
-
-        .radio-group{
-            display:flex;
-            gap:20px;
-        }
-
-        .btn-submit{
-            background:#667eea;
-            color:white;
-            padding:10px 25px;
-            border:none;
-            border-radius:8px;
-            cursor:pointer;
-            font-weight:500;
-            transition:0.3s;
-        }
-
-        .btn-submit:hover{
-            background:#5a67d8;
-        }
-
-        .btn-clear{
-            background:#e53e3e;
-            color:white;
-            padding:10px 25px;
-            border:none;
-            border-radius:8px;
-            cursor:pointer;
-            font-weight:500;
-            transition:0.3s;
-        }
-
-        .btn-clear:hover{
-            background:#c53030;
-        }
-
-        .table-container{
-            overflow-x:auto;
-        }
-
-        .data-table{
-            width:100%;
-            border-collapse:collapse;
-        }
-
-        .data-table th{
-            background:#667eea;
-            color:white;
-            padding:12px;
-        }
-
-        .data-table td{
-            padding:10px;
-            text-align:center;
-            border-bottom:1px solid #eee;
-        }
-
-        .data-table tr:hover{
-            background:#f3f4f6;
-        }
-
-        .action-link{
-            text-decoration:none;
-            padding:6px 10px;
-            border-radius:6px;
-            font-size:13px;
-            color:white;
-            margin:2px;
-            display:inline-block;
-        }
-
-        .assign-class{ background:#38a169; }
-        .assign-subject{ background:#3182ce; }
-        .assign-incharge{ background:#d69e2e; }
-
-        .action-link:hover{
-            opacity:0.85;
-        }
-
-        @media(max-width:768px){
-            .radio-group{
-                flex-direction:column;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-<div class="main-container">
-
-    <!-- ADD TEACHER FORM -->
-    <div class="card">
-        <h2>Add Teacher</h2>
-        <form action="" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <table class="form-table">
-
-                <tr>
-                    <td>Name</td>
-                    <td>
-                        <input type="text" required name="txt_name"
-                        pattern="^[A-Z]+[a-zA-Z ]*$"
-                        title="Name Allows Only Alphabets,Spaces and First Letter Must Be Capital Letter">
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Email</td>
-                    <td><input type="email" required name="txt_email"></td>
-                </tr>
-
-                <tr>
-                    <td>Contact</td>
-                    <td>
-                        <input type="text" required name="txt_contact"
-                        pattern="[6-9]{1}[0-9]{9}"
-                        title="Phone number must start with 6-9 and contain 10 digits">
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Role</td>
-                    <td class="radio-group">
-                        <label><input type="radio" required name="txt_role" value="Staff"> Staff</label>
-                        <label><input type="radio" name="txt_role" value="HOD"> HOD</label>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Gender</td>
-                    <td class="radio-group">
-                        <label><input type="radio" required name="txt_gender" value="Male"> Male</label>
-                        <label><input type="radio" name="txt_gender" value="Female"> Female</label>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Photo</td>
-                    <td><input type="file" name="file_photo" required accept="image/*"></td>
-                </tr>
-
-                <tr>
-                    <td>Department</td>
-                    <td>
-                        <select name="sel_department" required>
-                            <option value="">---select---</option>
-                            {% for i in departmentdata %}
-                            <option value="{{i.id}}">{{i.department_name}}</option>
+            <!-- Faculty List Container -->
+            <div class="card bg-white bg-opacity-5 border border-white border-opacity-10 rounded-4 shadow-sm overflow-hidden animate-fadeIn">
+                 <div class="card-header bg-white bg-opacity-5 py-3 px-4 border-0">
+                    <h5 class="mb-0 fw-bold small text-muted uppercase letter-spacing-1">Active Faculty Roster</h5>
+                 </div>
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover mb-0 align-middle">
+                        <thead class="bg-white bg-opacity-10 border-0">
+                            <tr>
+                                <th class="px-4 py-3 border-0 small text-muted uppercase">Faculty Info</th>
+                                <th class="px-4 py-3 border-0 small text-muted uppercase">Role & Dept</th>
+                                <th class="px-4 py-3 border-0 small text-muted uppercase">Contact</th>
+                                <th class="px-4 py-3 border-0 small text-muted uppercase text-end">Administration</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in teacherdata %}
+                            <tr class="border-white border-opacity-5">
+                                <td class="px-4 py-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="rounded-circle overflow-hidden bg-primary bg-opacity-10 text-center" style="width: 45px; height: 45px; line-height: 45px;">
+                                            <i class="fas fa-user-tie text-primary opacity-50"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">{{ i.teacher_name }}</div>
+                                            <div class="smaller text-muted opacity-50">{{ i.teacher_gender }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="small fw-bold">{{ i.teacher_role }}</div>
+                                    <div class="smaller text-primary opacity-75">{{ i.department.department_name }}</div>
+                                </td>
+                                <td class="px-4 py-3 small opacity-75">
+                                    <div class="mb-1"><i class="fas fa-envelope me-2 smaller"></i>{{ i.teacher_email }}</div>
+                                    <div><i class="fas fa-phone me-2 smaller"></i>{{ i.teacher_contact }}</div>
+                                </td>
+                                <td class="px-4 py-3 text-end">
+                                    <div class="btn-group shadow-sm">
+                                        <a href="{% url 'Admin:Assignclass' i.id %}" class="btn btn-sm btn-outline-info" title="Assign Class"><i class="fas fa-chalkboard"></i></a>
+                                        <a href="{% url 'Admin:Assignsubject' i.id %}" class="btn btn-sm btn-outline-primary" title="Assign Subject"><i class="fas fa-book-open"></i></a>
+                                        <a href="{% url 'Admin:Assignincharge' i.id %}" class="btn btn-sm btn-outline-warning" title="Set Lab/Field InCharge"><i class="fas fa-microscope"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-muted opacity-50">No faculty members registered.</td>
+                            </tr>
                             {% endfor %}
-                        </select>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Password</td>
-                    <td>
-                        <input type="password" required name="txt_password"
-                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                        title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 characters">
-                    </td>
-                </tr>
-
-                <tr>
-                    <td colspan="2" align="center">
-                        <button type="submit" class="btn-submit">Submit</button>
-                        <button type="reset" class="btn-clear">Clear</button>
-                    </td>
-                </tr>
-
-            </table>
-        </form>
-    </div>
-
-
-    <!-- TEACHER LIST TABLE -->
-    <div class="card">
-        <h2>Teacher List</h2>
-        <div class="table-container">
-            <table class="data-table">
-                <tr>
-                    <th>SlNo</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Contact</th>
-                    <th>Role</th>
-                    <th>Gender</th>
-                    <th>Department</th>
-                    <th>Action</th>
-                </tr>
-
-                {% for i in teacherdata %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ i.teacher_name }}</td>
-                    <td>{{ i.teacher_email }}</td>
-                    <td>{{ i.teacher_contact }}</td>
-                    <td>{{ i.teacher_role }}</td>
-                    <td>{{ i.teacher_gender }}</td>
-                    <td>{{ i.department.department_name }}</td>
-                    <td>
-                        <a href="{% url 'Admin:Assignclass' i.id %}" class="action-link assign-class">Assign Class</a>
-                        <a href="{% url 'Admin:Assignsubject' i.id %}" class="action-link assign-subject">Assign Subject</a>
-                        <a href="{% url 'Admin:Assignincharge' i.id %}" class="action-link assign-incharge">Assign InCharge</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </table>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
-
 </div>
-
-</body>
-</html>
 
 {% if msg %}
 <script>
-    alert("{{msg}}")
-    window.location = "{% url 'Admin:Addteacher' %}"
+    alert("{{msg}}");
 </script>
 {% endif %}
-
 {% endblock %}

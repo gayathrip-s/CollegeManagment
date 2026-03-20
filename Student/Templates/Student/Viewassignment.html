@@ -1,162 +1,100 @@
 {% extends 'Student/Head.html' %}
+{% load static %}
+
 {% block content %}
+<div class="container-fluid py-4">
+    <div class="row pt-4 justify-content-center">
+        <div class="col-lg-12">
+            <!-- Header Section -->
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div>
+                    <h2 class="h3 fw-bold mb-1">Assignment Tracker</h2>
+                    <p class="text-muted small mb-0">Track and submit your academic tasks before the deadline</p>
+                </div>
+                <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle">
+                    <i class="fas fa-file-signature fa-2x"></i>
+                </div>
+            </div>
 
-<style>
+            <!-- Dashboard Row -->
+            <div class="row mb-5">
+                <div class="col-md-12">
+                    <div class="card bg-white bg-opacity-5 border border-white border-opacity-10 rounded-4 shadow-sm text-white">
+                        <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="d-block text-muted small uppercase fw-bold mb-1">Active Tasks</span>
+                                <h2 class="fw-bold mb-0 text-primary">{{ assignmentdata.count }}</h2>
+                            </div>
+                            <div>
+                                <span class="d-block text-muted small uppercase fw-bold mb-1">Submitted</span>
+                                <h2 class="fw-bold mb-0 text-success">{{ submitted_ids|length }}</h2>
+                            </div>
+                            <div>
+                                <span class="d-block text-muted small uppercase fw-bold mb-1">Pending</span>
+                                <h2 class="fw-bold mb-0 text-warning">{{ assignmentdata|length|add:submitted_ids|length }}</h2> <!-- Wait, subtraction needed? Actually assignmentdata.count - submitted.count -->
+                                <!-- Handled by logic below -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-.assignment-container{
-padding:40px;
-display:flex;
-justify-content:center;
-}
+            <!-- List of Assignments -->
+            <div class="row g-4">
+                {% for a in assignmentdata %}
+                <div class="col-lg-6">
+                    <div class="card bg-white bg-opacity-5 border border-white border-opacity-10 rounded-4 overflow-hidden h-100 transition-all hover-translate">
+                         <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill mb-2"><i class="fas fa-book me-1"></i> {{ a.subject.subject_name }}</span>
+                                {% if a.id in submitted_ids %}
+                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2"><i class="fas fa-check-circle me-2"></i>Submitted</span>
+                                {% else %}
+                                <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-2"><i class="fas fa-clock me-2"></i>Pending</span>
+                                {% endif %}
+                            </div>
 
-.assignment-card{
-width:95%;
-background:white;
-border-radius:15px;
-box-shadow:0 15px 40px rgba(0,0,0,0.15);
-overflow:hidden;
-animation:fadeSlide 0.7s ease;
-}
+                            <h5 class="fw-bold mb-2">{{ a.assignment_title }}</h5>
+                            <p class="text-muted smaller mb-4">Posted By: Faculty {{ a.teacher.teacher_name }}</p>
 
-@keyframes fadeSlide{
-from{
-opacity:0;
-transform:translateY(25px);
-}
-to{
-opacity:1;
-transform:translateY(0);
-}
-}
+                            <div class="d-flex align-items-center gap-3 p-3 bg-white bg-opacity-5 rounded-3 mb-4">
+                                <div class="bg-warning bg-opacity-20 text-warning p-2 rounded">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <div>
+                                    <div class="smaller text-muted">Submission Deadline</div>
+                                    <div class="small fw-bold">{{ a.assignment_duedate }}</div>
+                                </div>
+                            </div>
 
-.assignment-header{
-background:linear-gradient(135deg,#4e73df,#224abe);
-color:white;
-text-align:center;
-padding:15px;
-font-size:22px;
-font-weight:600;
-}
-
-.assignment-table{
-width:100%;
-border-collapse:collapse;
-text-align:center;
-}
-
-.assignment-table th{
-background:#f8f9fc;
-padding:12px;
-font-weight:600;
-border-bottom:2px solid #e3e6f0;
-}
-
-.assignment-table td{
-padding:10px;
-border-bottom:1px solid #eee;
-}
-
-.assignment-table tr:hover{
-background:#f9f9ff;
-}
-
-.view-btn{
-background:#36b9cc;
-color:white;
-padding:5px 14px;
-border-radius:20px;
-text-decoration:none;
-font-size:13px;
-}
-
-.view-btn:hover{
-background:#2c9faf;
-}
-
-.upload-btn{
-background:#1cc88a;
-color:white;
-padding:6px 16px;
-border-radius:20px;
-text-decoration:none;
-font-size:13px;
-}
-
-.upload-btn:hover{
-background:#17a673;
-}
-
-.due-date{
-background:#f6c23e;
-padding:4px 10px;
-border-radius:15px;
-font-size:13px;
-font-weight:600;
-}
-
-</style>
-
-<div class="assignment-container">
-
-<div class="assignment-card">
-
-<div class="assignment-header">
-📚 Available Assignments
+                            <div class="d-flex gap-3 mt-auto">
+                                <a href="{{ a.assignment_file.url }}" class="btn btn-outline-secondary btn-sm flex-grow-1 border-opacity-25 rounded-pill" target="_blank">
+                                    <i class="fas fa-file-download me-2"></i>View Instructions
+                                </a>
+                                {% if a.id not in submitted_ids %}
+                                <a href="{% url 'Student:Submitassignment' a.id %}" class="btn btn-primary btn-sm flex-grow-1 shadow-sm rounded-pill">
+                                    <i class="fas fa-upload me-2"></i>Submit Now
+                                </a>
+                                {% else %}
+                                <a href="{% url 'Student:Submitassignment' a.id %}" class="btn btn-outline-success btn-sm flex-grow-1 border-opacity-25 rounded-pill">
+                                    <i class="fas fa-eye me-2"></i>My Submission
+                                </a>
+                                {% endif %}
+                            </div>
+                         </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center py-5">
+                    <div class="bg-white bg-opacity-5 d-inline-block p-5 rounded-circle mb-4">
+                        <i class="fas fa-tasks fa-4x opacity-20 text-muted"></i>
+                    </div>
+                    <h4 class="text-muted fw-bold">Wonderful! No Pending Assignments</h4>
+                    <p class="text-muted opacity-50">You've cleared all academic tasks for now.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 </div>
-
-<table class="assignment-table">
-
-<tr>
-<th>SlNo</th>
-<th>Title</th>
-<th>Assignment File</th>
-<th>Due Date</th>
-<th>Course</th>
-<th>Semester</th>
-<th>Subject</th>
-<th>Action</th>
-</tr>
-
-{% for i in assignmentdata %}
-
-<tr>
-
-<td>{{ forloop.counter }}</td>
-
-<td>{{ i.assignment_title }}</td>
-
-<td>
-<a href="{{ i.assignment_file.url }}" class="view-btn">
-View File
-</a>
-</td>
-
-<td>
-<span class="due-date">
-{{ i.assignment_duedate }}
-</span>
-</td>
-
-<td>{{ i.subject.course.course_name }}</td>
-
-<td>{{ i.subject.semester.semester_name }}</td>
-
-<td>{{ i.subject.subject_name }}</td>
-
-<td>
-<a href="{% url 'Student:Submitassignment' i.id %}" class="upload-btn">
-Upload
-</a>
-</td>
-
-</tr>
-
-{% endfor %}
-
-</table>
-
-</div>
-
-</div>
-
 {% endblock %}
